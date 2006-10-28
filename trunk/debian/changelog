@@ -1,3 +1,16 @@
+dh-make-perl (0.24) unstable; urgency=low
+
+  * Transferred package ownership to the Debian Perl Group
+  * Added patch by Fermin Galan, allowing to specify the maintainer from
+    the overrides file
+  * Fixed Perl package version parsing (Closes: #386086, #393438)
+  * Fixed: Was not properly ignoring Subversion/CVS directories when
+    called with an implicit --exclude/-i (Closes: #394314)
+  * Fixes the cases where Makefile.PL depends on FindBin (Closes:
+    #375146)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 27 Oct 2006 13:22:17 -0500
+
 dh-make-perl (0.23) unstable; urgency=low
 
   * Added --requiredeps option, to force dh-make-perl to choke on
@@ -24,7 +37,7 @@ dh-make-perl (0.22) unstable; urgency=low
 
 dh-make-perl (0.21) unstable; urgency=low
 
-  * Added patch by Adam Sjoergen/Damyan Ivanov fixing newlines in
+  * Added patch by Adam Sjoegren/Damyan Ivanov fixing newlines in
     descriptions that broke the generated debian/control files (Closes:
     #350728)
 

@@ -138,12 +138,14 @@ use Cwd;
 use Module::Depends::Intrusive;
 use strict;
 
+my $perl_pkg = get_perl_pkg_details();
+
 my $debstdversion = '3.7.2';
 my $priority = 'optional';
 #my $section = 'interpreters';
 my $section = 'perl';
 my $depends = '${perl:Depends}';
-my $bdependsi = 'perl (>= ' . `dpkg -p perl|grep ^Version:|cut -f 2 -d \ ` . ')';
+my $bdependsi = $perl_pkg->{Version};
 my $bdepends = 'debhelper (>= 5.0.0)';
 my $maintainer = get_maintainer();
 my $arch = 'all';
@@ -183,7 +185,7 @@ GetOptions(
 	"help" => sub {die "\n"},
 	# disabled: see build_package()
 	"dbflags=s" => \$dbflags,
-	"exclude|i" => \$excludeRE,
+	"exclude|i:s{,}" => \$excludeRE,
 	"build!" => \$build,
 	"install!" => \$install,
 	"notest" => \$notest,
@@ -197,11 +199,13 @@ Other options: [ --desc DESCRIPTION ] [ --arch all|any ] [ --version VERSION ]
                [ --nometa ] [ --requiredeps ]
 USAGE
 
-$excludeRE = '(?:\/|^)(?:CVS|.svn)\/' if ($excludeRE && $excludeRE == 1);
+$excludeRE = '(?:\/|^)(?:CVS|.svn)\/' if (defined $excludeRE && 
+					  $excludeRE eq '');
 
 load_overrides();
 my $tarball = setup_dir();
 $meta = process_meta("$maindir/META.yml") if (-f "$maindir/META.yml");
+findbin_fix();
 ($pkgname, $version) = extract_basic();
 if (! defined $pkgversion) {
 	$pkgversion = $version . "-1";
@@ -240,6 +244,12 @@ build_package($maindir) if $build or $install;
 install_package($debiandir) if $install;
 print "Done\n";
 exit(0);
+
+sub get_perl_pkg_details {
+    my (@dpkg_info);
+    @dpkg_info = map {chomp; s/\s*:\s*/:/; $_} `dpkg -p perl`;
+    return { map {split /:/, $_} @dpkg_info };
+}
 
 sub setup_dir {
 	my $tarball;
@@ -382,16 +392,32 @@ sub extract_basic {
 	extract_desc($modulepm);
     }
 
+    $excludeRE = '^$' unless $excludeRE;
     find(sub {
-	(! $excludeRE || ! $File::Find::name =~ /$excludeRE/) && /\.(pm|pod)$/ && do { extract_desc($_) };
+	$File::Find::name !~ /$excludeRE/ &&
+	    /\.(pm|pod)$/ &&
+	    extract_desc($_);
     }, $maindir);
 
     return ($pkgname, $version);
 }
 
+sub makefile_pl {
+    return "$maindir/Makefile.PL";
+}
+
+sub findbin_fix {
+    # FindBin requires to know the name of the invoker - and requires it to be
+    # Makefile.PL to function properly :-/
+    $0 = makefile_pl();
+    if (exists $FindBin::{Bin}) {
+	FindBin::again();
+    }
+}
+
 sub extract_name_ver {
-	my $makefile = "$maindir/Makefile.PL";
 	my ($name, $ver);
+        my $makefile = makefile_pl();
 
 	if (defined $meta->{name} and defined $meta->{version}) {
 	    $name = $meta->{name};
@@ -833,6 +859,7 @@ sub apply_overrides {
 
 	$extrasfields = $val if (defined($val=get_override_val($data, $subkey, 'sfields')));
 	$extrapfields = $val if (defined($val=get_override_val($data, $subkey, 'pfields')));
+	$maintainer = $val if (defined($val=get_override_val($data, $subkey, 'maintainer')));
 	# fix longdesc if needed
 	$longdesc =~ s/^\s*/ /mg;
 }
@@ -901,8 +928,9 @@ Specifies a CPAN site to use as mirror.
 =item B<--exclude> | B<-i> [I<REGEX>]
 
 This allows you to specify a PCRE to exclude some files from the search for
-docs and stuff like that. If no argument is given, it uses a default to
-exclude CVS and .svn directories.
+docs and stuff like that. If no argument is given (but the switch is specified
+- not specifying the switch will include everything), it defaults to exclude
+CVS and .svn directories.
 
 =item B<--build>
 
@@ -1013,14 +1041,25 @@ Maintained for a time by Marc Brockschmdit E<lt>marc@dch-faq.deE<gt>.
 Now maintained by Gunnar Wolf E<lt>gwolf@gwolf.orgE<gt>.
 
 Patches from:
-  Gergely Nagy E<lt>algernon@bonehunter.rulez.orgE<gt>
+
+  Adam Sjoegren E<lt>asjo@koldfront.dkE<gt>
   Adrian Phillips E<lt>adrianp@powertech.noE<gt>
-  Ton Nijkes E<lt>tonn@wau.mis.ah.nlE<gt>
-  Matt Hope E<lt>dopey@debian.orgE<gt>
-  Juerd E<lt>juerd@ouranos.juerd.netE<gt>
+  Amos Shapira E<lt>amos.shapira@gmail.comE<gt>
   Christian Kurz E<lt>shorty@debian.orgE<gt>
+  Damyan Ivanov E<lt>divanov@creditreform.bgE<gt>
   David Pashley E<lt>david@davidpashley.comE<gt>
   Edward Betts E<lt>edward@debian.orgE<gt>
+  Fermin Galan E<lt>galan@dit.upm.esE<gt>
+  Geoff Richards E<lt>qef@ungwe.orgE<gt>
+  Gergely Nagy E<lt>algernon@bonehunter.rulez.orgE<gt>
+  Juerd E<lt>juerd@ouranos.juerd.netE<gt>
+  Matt Hope E<lt>dopey@debian.orgE<gt>
+  Noel Maddy E<lt>noel@zhtwn.comE<gt>
+  Peter Moerch E<lt>mn3k66i02@sneakemail.comE<gt>
+  Stephen Oberholtzer E<lt>oliverklozoff@gmail.comE<gt>
+  Ton Nijkes E<lt>tonn@wau.mis.ah.nlE<gt>
+
+  ...And others who, sadly, we have forgot to add :-/
 
 =cut
 

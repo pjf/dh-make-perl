@@ -3,8 +3,8 @@ Section: devel
 Priority: optional
 Build-Depends: debhelper (>= 5.0.0)
 Build-Depends-Indep: perl
-Maintainer: Gunnar Wolf <gwolf@debian.org>
-Uploaders: Wolfgang Schemmel <debian@37.org>, Christopher Sacca <csacca@thecsl.org>
+Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Uploaders: Gunnar Wolf <gwolf@debian.org>, Wolfgang Schemmel <debian@37.org>, Christopher Sacca <csacca@thecsl.org>
 Standards-Version: 3.7.2
 
 Package: dh-make-perl
