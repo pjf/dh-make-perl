@@ -247,8 +247,8 @@ exit(0);
 
 sub get_perl_pkg_details {
     my (@dpkg_info);
-    @dpkg_info = map {chomp; s/\s*:\s*/:/; $_} `dpkg -p perl`;
-    return { map {split /:/, $_} @dpkg_info };
+    chomp( @dpkg_info =  grep /^\S/, `dpkg -p perl`);
+       return( { map { m/^(\S+?):\s+(.*)/; $1 => $2} @dpkg_info })  ;
 }
 
 sub setup_dir {
@@ -1052,6 +1052,7 @@ Patches from:
   Fermin Galan E<lt>galan@dit.upm.esE<gt>
   Geoff Richards E<lt>qef@ungwe.orgE<gt>
   Gergely Nagy E<lt>algernon@bonehunter.rulez.orgE<gt>
+  Johnny Morano E<lt>jmorano@moretrix.comE<gt>
   Juerd E<lt>juerd@ouranos.juerd.netE<gt>
   Matt Hope E<lt>dopey@debian.orgE<gt>
   Noel Maddy E<lt>noel@zhtwn.comE<gt>
