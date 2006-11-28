@@ -12,7 +12,7 @@ dh-make-perl (0.25) unstable; urgency=low
   * A bit of basic cleaning, trying to deuglify this very much love-
     needing source code
   * Added patch by Jesper Krogh which allows dh-make-perl to generate
-    versioned dependency strings
+    versioned dependency strings (Closes: #364325)
 
  -- Gunnar Wolf <gwolf@debian.org>  Tue, 28 Nov 2006 11:47:32 -0600
 
