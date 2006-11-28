@@ -2,8 +2,19 @@ dh-make-perl (0.25) unstable; urgency=low
 
   * Fixed the Perl package data parsing function, fixing an unneeded
     warning. Thanks to Johnny Morano for the patch! (Closes: #396846)
+  * Generated dependency on Perl was incomplete (it _only_ missed the
+    package name :-/ ) - Thanks to Hilko Bengen for pointing it out.
+    (Closes: #400400)
+  * No longer dies when building Module::Install modules - It now asks
+    the user to manually specify the dependencies. (Closes: #396536)
+  * Can now specify via command line depends, build-depends and build-
+    depends-indep
+  * A bit of basic cleaning, trying to deuglify this very much love-
+    needing source code
+  * Added patch by Jesper Krogh which allows dh-make-perl to generate
+    versioned dependency strings
 
- -- Gunnar Wolf <gwolf@debian.org>  Fri,  3 Nov 2006 09:46:37 -0600
+ -- Gunnar Wolf <gwolf@debian.org>  Tue, 28 Nov 2006 11:47:32 -0600
 
 dh-make-perl (0.24) unstable; urgency=low
 
