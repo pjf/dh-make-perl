@@ -3,9 +3,6 @@
 # packages. It was created by Marc Brockschmidt <marc@dch-faq.de> for
 # the Debian Perl Group (http://pkg-perl.alioth.debian.org/) but may
 # be used freely wherever it is useful.
-#
-# It was later modified by Jason Kohles <email@jasonkohles.com>
-# http://www.jasonkohles.com/ to support Module::Build installed modules
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -22,13 +19,22 @@ endif
 
 TMP     =$(CURDIR)/debian/$(PACKAGE)
 
+# Allow disabling build optimation by setting noopt in
+# $DEB_BUILD_OPTIONS
+CFLAGS = -Wall -g
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+        CFLAGS += -O0
+else
+        CFLAGS += -O2
+endif
+
 build: build-stamp
 build-stamp:
 	dh_testdir
 
 	# Add commands to compile the package here
-	$(PERL) Build.PL installdirs=vendor
-	OPTIMIZE="-Wall -O2 -g" $(PERL) Build
+	$(PERL) Makefile.PL INSTALLDIRS=vendor
+	$(MAKE) OPTIMIZE="$(CFLAGS)" LD_RUN_PATH=""
 
 	touch build-stamp
 
@@ -37,7 +43,7 @@ clean:
 	dh_testroot
 
 	# Add commands to clean up after the build process here
-	[ ! -f Build ] || $(PERL) Build distclean
+	[ ! -f Makefile ] || $(MAKE) realclean
 
 	dh_clean build-stamp install-stamp
 
@@ -49,32 +55,42 @@ install-stamp:
 
 	# Add commands to install the package into debian/$PACKAGE_NAME here
 	#TEST#
-	$(PERL) Build install destdir=$(TMP)
+	$(MAKE) install DESTDIR=$(TMP) PREFIX=/usr
+
+	# As this is a architecture dependent package, we are not
+	# supposed to install stuff to /usr/share. MakeMaker creates
+	# the dirs, we delete them from the deb:
+	rmdir --ignore-fail-on-non-empty --parents $(TMP)/usr/share/perl5
 
 	touch install-stamp
 
-binary-arch:
+# Build architecture-independent files here.
+binary-indep: build install
 # We have nothing to do by default.
 
-binary-indep: build install
+# Build architecture-dependent files here.
+binary-arch: build install
 	dh_testdir
 	dh_testroot
-#	dh_installcron
-#	dh_installmenu
-#	dh_installexamples
 	dh_installdocs #DOCS#
+	dh_installexamples 
+#	dh_installmenu
+#	dh_installcron
+#	dh_installman
 	dh_installchangelogs #CHANGES#
-	dh_perl
 	dh_link
 	dh_strip
 	dh_compress
 	dh_fixperms
+	dh_makeshlibs
 	dh_installdeb
+	dh_perl 
+	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
 
-source diff:
+source diff:                                                                  
 	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
 
 binary: binary-indep binary-arch

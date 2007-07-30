@@ -1,39 +1,3 @@
-dh-make-perl (0.27) unstable; urgency=low
-
-  [ Gunnar Wolf ]
-  * Moved all the options received from the user to %opts, for better
-    code readability
-  * When the module to be packaged declares a dependency on a specific
-    Perl version, reflect it in the output dependency/build dependency
-    information, rather than complaining that no such module exists
-
-  [ gregor herrmann ]
-  * Add "It was downloaded from ..." to debian/copyright if called with
-    "--cpan $modulename".
-
- -- gregor herrmann <gregor+debian@comodo.priv.at>  Sat, 28 Jul 2007 15:59:01 +0200
-
-dh-make-perl (0.26) unstable; urgency=low
-
-  [ Frank Lichtenheld ]
-  * s/debian/Debian/ in Description
-
-  [ Gunnar Wolf ]
-  * Trimmed unneeded whitespace from generated files - Thanks to Kees
-    Cook <kees@outflux.net> for the patch! (Closes: #411282)
-  * Patched regex for finding the module name when unde Module::Install,
-    allowing for whitespace between the "name" string and the module
-    name. Thanks to Marc Chantreux for the patch (and the patience ;-) )
-  * Replaced the (now deprecated) call to the external program 822-date
-    for date -R
-  * Started reorganizing the code - All bare open() calls are now
-    handled through IO::File; shuffled some functions around so the code
-    is more followable
-  * Added --core-ok option to allow building core modules (Closes:
-    #409017)
-
- -- Gunnar Wolf <gwolf@debian.org>  Wed, 09 May 2007 19:24:16 -0500
-
 dh-make-perl (0.25) unstable; urgency=low
 
   * Fixed the Perl package data parsing function, fixing an unneeded

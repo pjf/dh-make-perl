@@ -8,7 +8,6 @@ use File::Copy qw(copy move);
 use User::pwent;
 use Getopt::Long;
 use Cwd;
-use CPAN;
 use Module::Depends::Intrusive;
 use strict;
 
@@ -171,29 +170,50 @@ my ($pkgname, $srcname,
     # $pkgversion is the resulting version of the package: User's
     # --version=s or "$version-1"
     $pkgversion, 
-    $desc, $longdesc, $copyright, $author, $upsurl);
+    $desc, $longdesc, $copyright, $author);
 my ($extrasfields, $extrapfields);
 my (@docs, $changelog, @args);
-
-my %opts;
+my ($core_ok, $cpanmodule, $cpanplusmodule, $cpanmirror, $build, $install, 
+    $dbflags, $excludeRE, $notest, $nometa, $requiredeps, $user_depends,
+    $user_bdepends, $user_bdependsi);
 
 my $mod_cpan_version;
 
-$opts{dbflags} = $>==0?"":"-rfakeroot";
+$dbflags = $>==0?"":"-rfakeroot";
 chomp($date);
 
-GetOptions(\%opts, 
-	   'arch=s', 'bdepends=s', 'bdependsi=s', 'build!', 'core-ok', 
-	   'cpan=s', 'cpanplus=s', 'cpan-mirror=s', 'dbflags=s', 'depends=s', 
-	   'desc=s', 'exclude|i:s{,}', 'help', 'install!', 'nometa', 'notest',
-	   'requiredeps', 'version=s') or die usage_instructions();
+GetOptions(
+	"core-ok" => \$core_ok,
+	"cpan=s" => \$cpanmodule,
+#	"cpanplus=s" => \$cpanplusmodule,
+	"cpan-mirror=s" => \$cpanmirror,
+	"desc=s" => \$desc,
+	"arch=s" => \$arch,
+	"version=s" => \$pkgversion,
+	"help" => sub {die "\n"},
+	# disabled: see build_package()
+	"dbflags=s" => \$dbflags,
+	"exclude|i:s{,}" => \$excludeRE,
+	"build!" => \$build,
+	"install!" => \$install,
+	"notest" => \$notest,
+	"nometa" => \$nometa,
+	"requiredeps" => \$requiredeps,
+	"depends=s" => \$user_depends,
+	"bdepends=s" => \$user_bdepends,
+	"bdependsi=s" => \$user_bdependsi
+	) || die <<"USAGE";
+Usage:
+$0 [ --build ] [ --install ] [ SOURCE_DIR | --cpan MODULE ]
+Other options: [ --desc DESCRIPTION ] [ --arch all|any ] [ --version VERSION ]
+               [ --depends DEPENDS ] [ --bdepends BUILD-DEPENDS ]
+               [ --bdependsi BUILD-DEPENDS-INDEP ] [ --cpan-mirror MIRROR ]
+               [ --exclude|-i [REGEX] ] [ --notest ] [ --nometa ] 
+               [ --requiredeps ] [ --core-ok ]
+USAGE
 
-# Help requested? Nice, we can just die! Isn't it helpful?
-die usage_instructions() if $opts{help};
-die "CPANPLUS support disabled, sorry" if $opts{cpanplus};
-
-$opts{exclude} = '(?:\/|^)(?:CVS|.svn)\/' if (defined $opts{exclude} && 
-					  $opts{exclude} eq '');
+$excludeRE = '(?:\/|^)(?:CVS|.svn)\/' if (defined $excludeRE && 
+					  $excludeRE eq '');
 
 load_overrides();
 my $tarball = setup_dir();
@@ -208,15 +228,15 @@ my $module_build = (-f "$maindir/Build.PL") ? "Module-Build" : "MakeMaker";
 extract_changelog($maindir);
 extract_docs($maindir);
 
-if (defined $opts{bdepends}) {
-    $bdepends = $opts{bdepends};
+if (defined $user_bdepends) {
+    $bdepends = $user_bdepends;
 } else {
     $bdepends .= ', libmodule-build-perl' if ($module_build eq "Module-Build");
 }
-$bdependsi = $opts{bdependsi} if defined $opts{bdependsi};
+$bdependsi = $user_bdependsi if defined $user_bdependsi;
 
-if (defined $opts{depends}) {
-    $depends = $opts{depends};
+if (defined $user_depends) {
+    $depends = $user_depends;
 } else {
     $depends .= ', ${shlibs:Depends}' if $arch eq 'any';
     $depends .= ', ${misc:Depends}';
@@ -240,27 +260,15 @@ create_control("$debiandir/control");
 create_changelog("$debiandir/changelog");
 create_rules("$debiandir/rules");
 create_compat("$debiandir/compat");
-create_watch("$debiandir/watch", $opts{cpan}) if ($opts{cpan});
+create_watch("$debiandir/watch", $cpanmodule) if ($cpanmodule);
 #create_readme("$debiandir/README.Debian");
 create_copyright("$debiandir/copyright");
 fix_rules("$debiandir/rules", (defined $changelog ? $changelog : ''), @docs);
 apply_final_overrides();
-build_package($maindir) if $opts{build} or $opts{install};
-install_package($debiandir) if $opts{install};
+build_package($maindir) if $build or $install;
+install_package($debiandir) if $install;
 print "Done\n";
 exit(0);
-
-sub usage_instructions {
-return <<"USAGE"
-Usage:
-$0 [ --build ] [ --install ] [ SOURCE_DIR | --cpan MODULE ]
-Other options: [ --desc DESCRIPTION ] [ --arch all|any ] [ --version VERSION ]
-               [ --depends DEPENDS ] [ --bdepends BUILD-DEPENDS ]
-               [ --bdependsi BUILD-DEPENDS-INDEP ] [ --cpan-mirror MIRROR ]
-               [ --exclude|-i [REGEX] ] [ --notest ] [ --nometa ] 
-               [ --requiredeps ] [ --core-ok ]
-USAGE
-}
 
 sub get_perl_pkg_details {
     my (@dpkg_info);
@@ -271,32 +279,26 @@ sub get_perl_pkg_details {
 sub setup_dir {
 	my ($dist, $mod, $cpanversion, $tarball);
 	$mod_cpan_version = '';
-	if ($opts{cpan}) {
+	if ($cpanmodule) {
 	        my ($new_maindir);
-		# Is the module a core module?
-		if ((grep(/$opts{cpan}/, @pragmas)) ||
-		    (grep(/$opts{cpan}/, @stdmodules))) {
-		        die "$opts{cpan} is a standard module.\n" 
-			    unless $opts{'core-ok'};
+		# Is the module a core module
+		if ((grep(/$cpanmodule/, @pragmas)) ||
+		    (grep(/$cpanmodule/, @stdmodules))) {
+		        die "$cpanmodule is a standard module.\n" unless $core_ok;
 		}	
-
-		# Make CPAN happy, make the user happy: Be more tolerant!
-		# Accept names to be specified with double-colon, dash or slash
-		$opts{cpan} =~ s![/-]!::!g;
-
-###		require CPAN;
+	
+		require CPAN;
 		CPAN::Config->load;
 
-		unshift(@{$CPAN::Config->{'urllist'}}, $opts{'cpan-mirror'})
-		    if $opts{'cpan-mirror'};
+		unshift @{$CPAN::Config->{'urllist'}}, $cpanmirror if $cpanmirror;
 
 		$CPAN::Config->{'build_dir'} = $ENV{'HOME'} . "/.cpan/build";
 		$CPAN::Config->{'cpan_home'} = $ENV{'HOME'} . "/.cpan/";
 		$CPAN::Config->{'histfile'}  = $ENV{'HOME'} . "/.cpan/history";
 		$CPAN::Config->{'keep_source_where'} = $ENV{'HOME'} . "/.cpan/source";
                 
-		$mod = CPAN::Shell->expand('Module', '/^'.$opts{cpan}.'$/') 
-			|| die "Can't find '$opts{cpan}' module on CPAN\n";
+		$mod = CPAN::Shell->expand('Module', '/^'.$cpanmodule.'$/') 
+			|| die "Can't find '$cpanmodule' module on CPAN\n";
 		$mod_cpan_version = $mod->cpan_version;
 		$cpanversion = $CPAN::VERSION;
 		$cpanversion =~ s/_.*//;
@@ -306,16 +308,14 @@ sub setup_dir {
 		if ($cpanversion < 1.59) { # wild guess on the version number
 			$dist = $CPAN::META->instance('CPAN::Distribution', $mod->{CPAN_FILE});
 			$dist->get || die "Cannot get $mod->{CPAN_FILE}\n";
-			$tarball .= $mod->{CPAN_FILE};
+                        $tarball .= $mod->{CPAN_FILE};
 			$maindir = $dist->{'build_dir'};
-			$upsurl = "http://www.cpan.org/authors/id/" . $mod->{CPAN_FILE};
 		} else {
 			# CPAN internals changed
 			$dist = $CPAN::META->instance('CPAN::Distribution', $mod->cpan_file);
 			$dist->get || die "Cannot get ", $mod->cpan_file, "\n";
-			$tarball .= $mod->cpan_file;
-			$maindir = $dist->dir;
-			$upsurl = "http://www.cpan.org/authors/id/" . $mod->cpan_file;
+                        $tarball .= $mod->cpan_file;
+                        $maindir = $dist->dir;
 		}
 
 		copy ($tarball, $ENV{'PWD'});
@@ -324,17 +324,17 @@ sub setup_dir {
 		`mv "$maindir" "$new_maindir"`;
 		$maindir = $new_maindir;
 
-	} elsif ($opts{cpanplus}) {
+	} elsif ($cpanplusmodule) {
 	        die "CPANPLUS support is b0rken at the moment.";
-#  	        my ($cb, $href, $file);
+ 	        my ($cb, $href, $file);
 
-# 		eval "use CPANPLUS 0.045;";
-# 		$cb = CPANPLUS::Backend->new(conf => {debug => 1, verbose => 1});
-# 		$href = $cb->fetch( modules => [ $opts{cpanplus} ], fetchdir => $ENV{'PWD'});
-# 		die "Cannot get $opts{cpanplus}\n" if keys(%$href) != 1;
-# 		$file = (values %$href)[0];
-# 		print $file, "\n\n";
-# 		$maindir = $cb->extract( files => [ $file ], extractdir => $ENV{'PWD'} )->{$file};
+		eval "use CPANPLUS 0.045;";
+		$cb = CPANPLUS::Backend->new(conf => {debug => 1, verbose => 1});
+		$href = $cb->fetch( modules => [ $cpanplusmodule ], fetchdir => $ENV{'PWD'});
+		die "Cannot get $cpanplusmodule\n" if keys(%$href) != 1;
+		$file = (values %$href)[0];
+		print $file, "\n\n";
+		$maindir = $cb->extract( files => [ $file ], extractdir => $ENV{'PWD'} )->{$file};
 	} else {
 		$maindir = shift(@ARGV) || '.';
 		$maindir =~ s/\/$//;
@@ -345,7 +345,7 @@ sub setup_dir {
 sub build_package {
 	my $maindir = shift;
 	# uhmf! dpkg-genchanges doesn't cope with the deb being in another dir..
-	#system("dpkg-buildpackage -b -us -uc $opts{dbflags}") == 0
+	#system("dpkg-buildpackage -b -us -uc $dbflags") == 0
 	system("fakeroot make -C $maindir -f debian/rules clean");
 	system("fakeroot make -C $maindir -f debian/rules binary") == 0
 		|| die "Cannot create deb package\n";
@@ -371,7 +371,7 @@ sub process_meta {
     my ($file, $yaml);
     $file = shift;
     # Command line option nometa causes this function not to be run
-    return {} if $opts{nometa};
+    return {} if $nometa;
 
     # YAML::LoadFile has the bad habit of dying when it cannot properly parse
     # a file - Catch it in an eval, and if it dies, return -again- just an
@@ -405,7 +405,7 @@ sub extract_basic {
     $pkgname = lc $perlname;
     $pkgname =~ s/::/-/;
     $pkgname = 'lib'.$pkgname unless $pkgname =~ /^lib/;
-    $pkgname .= '-perl' unless ($pkgname =~ /-perl$/ and $opts{cpan} !~ /::perl$/i);
+    $pkgname .= '-perl' unless ($pkgname =~ /-perl$/ and $cpanmodule !~ /::perl$/i);
 
     # ensure policy compliant names and versions (from Joeyh)...
     $pkgname =~ s/[^-.+a-zA-Z0-9]+/-/g;
@@ -422,9 +422,9 @@ sub extract_basic {
 	extract_desc($modulepm);
     }
 
-    $opts{exclude} = '^$' unless $opts{exclude};
+    $excludeRE = '^$' unless $excludeRE;
     find(sub {
-	$File::Find::name !~ /$opts{exclude}/ &&
+	$File::Find::name !~ /$excludeRE/ &&
 	    /\.(pm|pod)$/ &&
 	    extract_desc($_);
     }, $maindir);
@@ -499,9 +499,9 @@ sub extract_name_ver_from_makefile {
 	}
 	$name =~ s/,.*$//;
 	# band aid: need to find a solution also for build in directories
-	# warn "name is $name (cpan name: $opts{cpan})\n";
-	$name = $opts{cpan} if ($name eq '__PACKAGE__' && $opts{cpan});
-	$name = $opts{cpanplus} if ($name eq '__PACKAGE__' && $opts{cpanplus});
+	# warn "name is $name (cpan name: $cpanmodule)\n";
+	$name = $cpanmodule if ($name eq '__PACKAGE__' && $cpanmodule);
+	$name = $cpanplusmodule if ($name eq '__PACKAGE__' && $cpanplusmodule);
 
 	# Get the version
 	if (defined $pkgversion) {
@@ -627,7 +627,7 @@ sub extract_changelog {
 	$dir .= '/' unless $dir =~ m(/$);
 	find(sub {
 		$changelog = substr($File::Find::name, length($dir))
-			if (!defined($changelog) && /^change(s|log)$/i && (! $opts{exclude} || ! $File::Find::name =~ /$opts{exclude}/));
+			if (!defined($changelog) && /^change(s|log)$/i && (! $excludeRE || ! $File::Find::name =~ /$excludeRE/));
 	}, $dir);
 }
 
@@ -636,7 +636,7 @@ sub extract_docs {
 	$dir .= '/' unless $dir =~ m(/$);
 	find(sub {
 		push (@docs, substr($File::Find::name, length($dir)))
-			if (/^(README|TODO|BUGS|NEWS|ANNOUNCE)/i && (! $opts{exclude} || ! $File::Find::name =~ /$opts{exclude}/)) ;
+			if (/^(README|TODO|BUGS|NEWS|ANNOUNCE)/i && (! $excludeRE || ! $File::Find::name =~ /$excludeRE/)) ;
 	}, $dir);
 }
 
@@ -680,7 +680,7 @@ sub extract_depends {
 
 	    exit 1;
 	}
-
+	
 	foreach my $module (keys( %dep_hash )) {
 		next if (grep ( /^$module$/, @pragmas, @stdmodules));
 		
@@ -688,49 +688,43 @@ sub extract_depends {
 	}
 
 	if (`which apt-file`) {
-	    foreach my $module (@uses) {
-		my (@search, $ls, $ver, $re, $mod);
+		foreach my $module (@uses) {
+		        my (@search, $ls, $ver, $re, $mod);
+			$mod = $module;
+			print "Searching for $module package using apt-file.\n";
+			$module =~ s|::|/|g;
 
-		if ($module eq 'perl') {
-		    substitute_perl_dependency($dep_hash{perl});
-		    next;
-		}
+			@search = `apt-file search $module.pm`;
 
-		$mod = $module;
-		print "Searching for $module package using apt-file.\n";
-		$module =~ s|::|/|g;
-
-		@search = `apt-file search $module.pm`;
-
-		# Regex's to search the return of apt-file to find the right pkg
-		$ls  = '(?:lib|share)';
-		$ver = '\d+(\.\d+)+';
-		$re  = "usr/(?:$ls/perl/$ver|$ls/perl5)/$module\\.pm";
-
-		for (@search) {
-		    # apt-file output
-		    # package-name: path/to/perl/module.pm
-		    chomp; 
-		    my ($p, $f) = split / /, $_;
-		    chop($p); #Get rid of the ":"
-		    if ($f =~ /$re/ && ! grep { $_ eq $p } @deps, "perl", "perl-base", "perl-modules") {
-			if (exists $dep_hash{$mod}) {
-			    push @deps, {name=>$p, 
-					 version=>$dep_hash{$mod}};
-			} else {
-			    push @deps, {name => $p};
+			# Regex's to search the return of apt-file to find the right pkg
+			$ls  = '(?:lib|share)';
+			$ver = '\d+(\.\d+)+';
+			$re  = "usr/(?:$ls/perl/$ver|$ls/perl5)/$module\\.pm";
+				
+			for (@search) {
+				# apt-file output
+				# package-name: path/to/perl/module.pm
+				chomp; 
+				my ($p, $f) = split / /, $_;
+				chop($p); #Get rid of the ":"
+				if ($f =~ /$re/ && ! grep { $_ eq $p } @deps, "perl", "perl-base", "perl-modules") {
+				    if (exists $dep_hash{$mod}) {
+					push @deps, {name=>$p, 
+						     version=>$dep_hash{$mod}};
+				    } else {
+					push @deps, {name => $p};
+				    }
+				    last;
+				}
 			}
-			last;
+			
+			unless (@search) {
+			    $module =~ s|/|::|g;
+				push @not_debs, $module;
 		    }
 		}
-			
-		unless (@search) {
-		    $module =~ s|/|::|g;
-		    push @not_debs, $module;
-		}
-	    }
-	} elsif ( $opts{requiredeps} ) {
-	    die "--requiredeps was specified, but apt-file was not found\n";
+	} elsif ( $requiredeps ) {
+		die "--requiredeps was specified, but apt-file was not found\n";
 	}
 	
 	print "\n";
@@ -739,7 +733,7 @@ sub extract_depends {
 	if (@not_debs) {
 		my $missing_debs_str = "Needs the following modules for which there are no debian packages available: "
 			. join (", ", @not_debs) . "\n";
-		if ( $opts{requiredeps} ) {
+		if ( $requiredeps ) {
 			die $missing_debs_str;
 		} else {
 			print $missing_debs_str;
@@ -751,32 +745,8 @@ sub extract_depends {
 				     $_->{name} } @deps);
 }
 
-sub substitute_perl_dependency {
-    # If we get 'perl' specified in here, the module requires a
-    # specific version of Perl in order to be run. This is only
-    # reliable if we have ${perl:Depends} in $depends and either 
-    # of $bdepends and $bdependsi - Warn otherwise.
-    my ($version, $dep_str, $old_dep_str, $old_bdep_str);
-    $version = shift;
-
-    # Over-escaping? I'm putting this in variables to get a bit more clarity.
-    # Remember they will be fed into the regex engine.
-    $dep_str = "perl (>= $version)";
-    $old_dep_str = '\\$\\{perl:Depends\\}';
-    $old_bdep_str = "perl \\(>= $perl_pkg->{Version}\\)";
-
-    unless ($depends =~ s/$old_dep_str/$dep_str/ and
-	    ($bdepends =~ s/$old_bdep_str/$dep_str/ or
-	     $bdependsi =~ s/$old_bdep_str/$dep_str/)) {
-	warn "The module requires Perl version $version, but you have ",
-	"apparently overriden the default dependency handling.\n",
-	"Please note that you might need to manually edit your debian/control ",
-	"- It might not make sense at all!\n";
-    }
-}
-
 sub check_for_xs {
-	(! $opts{exclude} || ! $File::Find::name =~ /$opts{exclude}/) && /\.(xs|c|cpp|cxx)$/i && do {
+	(! $excludeRE || ! $File::Find::name =~ /$excludeRE/) && /\.(xs|c|cpp|cxx)$/i && do {
 		$arch = 'any';
 	};
 }
@@ -787,7 +757,7 @@ sub fix_rules  {
 
 	$test_line = ($module_build eq 'Module-Build') ? 
 	    '$(PERL) Build test' : '$(MAKE) test';
-	$test_line = "#$test_line" if $opts{notest};
+	$test_line = "#$test_line" if $notest;
 
 	$fh = _file_rw($rules_file);
 	@content = $fh->getlines;
@@ -807,7 +777,7 @@ sub create_control {
         my $fh = _file_w(shift);
 
 	if ($arch ne 'all' and 
-	    !defined($opts{bdepends}) and !defined($opts{bdependsi})) {
+	    !defined($user_bdepends) and !defined($user_bdependsi)) {
 	    $bdepends .= ", $bdependsi";
 	    $bdependsi = '';
 	}
@@ -866,12 +836,7 @@ sub create_copyright {
 "This is the debian package for the $perlname module.
 It was created by $maintainer using dh-make-perl.
 
-");
-        if (defined $upsurl) {
-                $fh->print("It was downloaded from $upsurl\n\n");
-        }
-	$fh->print(
-"This copyright info was automatically extracted from the perl module.
+This copyright info was automatically extracted from the perl module.
 It may not be accurate, so you better check the module sources
 if don\'t want to get into legal troubles.
 
@@ -1233,7 +1198,6 @@ Patches from:
   Fermin Galan E<lt>galan@dit.upm.esE<gt>
   Geoff Richards E<lt>qef@ungwe.orgE<gt>
   Gergely Nagy E<lt>algernon@bonehunter.rulez.orgE<gt>
-  gregor herrmann E<lt>gregor+debian@comodo.priv.atE<gt>
   Hilko Bengen E<lt>bengen@debian.orgE<gt>
   Kees Cook E<lt>keex@outflux.netE<gt>
   Jesper Krogh E<lt>jesper@krogh.ccE<gt>

@@ -3,9 +3,6 @@
 # packages. It was created by Marc Brockschmidt <marc@dch-faq.de> for
 # the Debian Perl Group (http://pkg-perl.alioth.debian.org/) but may
 # be used freely wherever it is useful.
-#
-# It was later modified by Jason Kohles <email@jasonkohles.com>
-# http://www.jasonkohles.com/ to support Module::Build installed modules
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -27,8 +24,8 @@ build-stamp:
 	dh_testdir
 
 	# Add commands to compile the package here
-	$(PERL) Build.PL installdirs=vendor
-	OPTIMIZE="-Wall -O2 -g" $(PERL) Build
+	$(PERL) Makefile.PL INSTALLDIRS=vendor
+	$(MAKE) OPTIMIZE="-Wall -O2 -g"
 
 	touch build-stamp
 
@@ -37,7 +34,7 @@ clean:
 	dh_testroot
 
 	# Add commands to clean up after the build process here
-	[ ! -f Build ] || $(PERL) Build distclean
+	[ ! -f Makefile ] || $(MAKE) realclean
 
 	dh_clean build-stamp install-stamp
 
@@ -49,7 +46,12 @@ install-stamp:
 
 	# Add commands to install the package into debian/$PACKAGE_NAME here
 	#TEST#
-	$(PERL) Build install destdir=$(TMP)
+	$(MAKE) install DESTDIR=$(TMP) PREFIX=/usr
+
+	# As this is a architecture independent package, we are not
+	# supposed to install stuff to /usr/lib. MakeMaker creates
+	# the dirs, we delete them from the deb:
+	rmdir --ignore-fail-on-non-empty --parents $(TMP)/usr/lib/perl5
 
 	touch install-stamp
 
@@ -74,7 +76,7 @@ binary-indep: build install
 	dh_md5sums
 	dh_builddeb
 
-source diff:
+source diff:                                                                  
 	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
 
 binary: binary-indep binary-arch
