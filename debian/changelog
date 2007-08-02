@@ -11,7 +11,12 @@ dh-make-perl (0.27) unstable; urgency=low
   * Add "It was downloaded from ..." to debian/copyright if called with
     "--cpan $modulename".
 
- -- gregor herrmann <gregor+debian@comodo.priv.at>  Sat, 28 Jul 2007 15:59:01 +0200
+  [ Damyan Ivanov ]
+  * Added packaging copyright/licensing to the generated debian/copyright
+  * Added myself to Uploaders
+  * Wrap long fields in debian/control
+
+ -- Damyan Ivanov <dmn@debian.org>  Thu, 02 Aug 2007 08:41:56 +0300
 
 dh-make-perl (0.26) unstable; urgency=low
 

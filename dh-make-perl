@@ -898,6 +898,14 @@ The full text of the GPL is available on Debian systems in
 ");
 		}
 	}
+
+	my $year = (localtime)[5]+1900;
+	$fh->print("
+
+The Debian packaging is (C) $year, $maintainer and
+is licensed under the same terms as the software itself (see above).
+");
+
 	$fh->close;
 }
 
