@@ -471,7 +471,7 @@ sub extract_name_ver_from_makefile {
 	}
 
 	# Replace q[quotes] by "quotes"
-	$file =~ s/q\[(.+)]/"$1"/g;
+	$file =~ s/q\[(.+)]/'$1'/g;
 
 	# Get the name
 	if ($file =~ /([\'\"]?)
