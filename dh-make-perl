@@ -470,6 +470,9 @@ sub extract_name_ver_from_makefile {
 	    $file = $fh->getline;
 	}
 
+	# Replace q[quotes] by "quotes"
+	$file =~ s/q\[(.+)]/"$1"/g;
+
 	# Get the name
 	if ($file =~ /([\'\"]?)
 	    DISTNAME\1\s*
@@ -524,9 +527,9 @@ sub extract_name_ver_from_makefile {
 	    $ver = $1;
 	}
 
-	$modulepm = "$dir/$vfrom" if defined $vfrom;
-
 	$dir = dirname($makefile) || './';
+
+	$modulepm = "$dir/$vfrom" if defined $vfrom;
 
 	for (($name, $ver)) {
 		next unless defined;

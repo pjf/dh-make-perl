@@ -10,6 +10,10 @@ dh-make-perl (0.27) unstable; urgency=low
   [ gregor herrmann ]
   * Add "It was downloaded from ..." to debian/copyright if called with
     "--cpan $modulename".
+  * Define $dir before using it in "$modulepm =" in
+    extract_name_ver_from_makefile().
+  * Replace q[quotes] by "quotes" when parsing Makefile.PL in
+    extract_name_ver_from_makefile().
 
   [ Damyan Ivanov ]
   * Added packaging copyright/licensing to the generated debian/copyright
@@ -18,7 +22,7 @@ dh-make-perl (0.27) unstable; urgency=low
   * Add detailed copyright info in debian/copyright according to SVN logs and
     debian/changelog
 
- -- Damyan Ivanov <dmn@debian.org>  Thu, 02 Aug 2007 09:13:57 +0300
+ -- gregor herrmann <gregor+debian@comodo.priv.at>  Fri, 03 Aug 2007 20:08:03 +0200
 
 dh-make-perl (0.26) unstable; urgency=low
 
