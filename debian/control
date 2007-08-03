@@ -6,7 +6,7 @@ Build-Depends-Indep: perl
 Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
 Uploaders: Gunnar Wolf <gwolf@debian.org>, Wolfgang Schemmel <debian@37.org>,
  Christopher Sacca <csacca@thecsl.org>,
- Damyan Ivanov <dmn@debian.org>
+ Damyan Ivanov <dmn@debian.org>, gregor herrmann <gregor+debian@comodo.priv.at>
 Standards-Version: 3.7.2
 XS-Vcs-Svn: svn://svn.debian.org/pkg-perl/trunk/dh-make-perl/
 XS-Vcs-Browser: http://svn.debian.org/wsvn/pkg-perl/trunk/dh-make-perl/
