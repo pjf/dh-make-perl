@@ -14,6 +14,7 @@ dh-make-perl (0.27) unstable; urgency=low
     extract_name_ver_from_makefile().
   * Replace q[quotes] by "quotes" when parsing Makefile.PL in
     extract_name_ver_from_makefile().
+  * Actually use command line option "--desc".
 
   [ Damyan Ivanov ]
   * Added packaging copyright/licensing to the generated debian/copyright
@@ -22,7 +23,7 @@ dh-make-perl (0.27) unstable; urgency=low
   * Add detailed copyright info in debian/copyright according to SVN logs and
     debian/changelog
 
- -- gregor herrmann <gregor+debian@comodo.priv.at>  Fri, 03 Aug 2007 20:08:03 +0200
+ -- gregor herrmann <gregor+debian@comodo.priv.at>  Sun, 05 Aug 2007 23:59:04 +0200
 
 dh-make-perl (0.26) unstable; urgency=low
 

@@ -199,6 +199,9 @@ load_overrides();
 my $tarball = setup_dir();
 $meta = process_meta("$maindir/META.yml") if (-f "$maindir/META.yml");
 findbin_fix();
+if (defined $opts{desc}) {
+  $desc = $opts{desc};
+}
 ($pkgname, $version) = extract_basic();
 if (! defined $pkgversion) {
 	$pkgversion = $version . "-1";
