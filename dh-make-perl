@@ -93,6 +93,17 @@ my (@pragmas, @stdmodules);
 	      re sigtrap sort strict subs threads utf8
 	      vars vmsish warnings warnings::register);
 
+###
+### TO DO: This list is probably incomplete!
+###
+### @stdmodules should contain all the modules provided by the
+### required Perl packages (perl and perl-base). We should also debate
+### whether it should also include tmodules in perl-modules (which is
+### build-essential and standard).
+### 
+### Right now, as you can see, it's just a... Hand-maintained
+### list. Which does not scale.
+
 @stdmodules = qw(AnyDBM_File Attribute::Handlers::demo::Demo
 Attribute::Handlers::demo::Descriptions
 Attribute::Handlers::demo::MyClass Attribute::Handlers attributes
@@ -102,49 +113,54 @@ CGI::Pretty CGI::Push CGI::Switch CGI::Util CGI charnames Class::ISA
 Class::Struct constant CPAN::FirstTime CPAN::Nox CPAN Cwd DB
 Devel::SelfStubber diagnostics Digest DirHandle Dumpvalue English Env
 Exporter::Heavy Exporter ExtUtils::Command::MM ExtUtils::Command
-ExtUtils::Constant ExtUtils::Embed ExtUtils::Installed ExtUtils::Install
-ExtUtils::Liblist::Kid ExtUtils::Liblist ExtUtils::MakeMaker::bytes
-ExtUtils::MakeMaker::vmsish ExtUtils::MakeMaker ExtUtils::Manifest
-ExtUtils::Mkbootstrap ExtUtils::Mksymlists ExtUtils::MM_Any
-ExtUtils::MM_BeOS ExtUtils::MM_Cygwin ExtUtils::MM_DOS
-ExtUtils::MM_MacOS ExtUtils::MM_NW5 ExtUtils::MM_OS2 ExtUtils::MM
-ExtUtils::MM_Unix ExtUtils::MM_UWIN ExtUtils::MM_VMS ExtUtils::MM_Win32
+ExtUtils::Constant ExtUtils::Embed ExtUtils::Installed
+ExtUtils::Install ExtUtils::Liblist::Kid ExtUtils::Liblist
+ExtUtils::MakeMaker::bytes ExtUtils::MakeMaker::vmsish
+ExtUtils::MakeMaker ExtUtils::Manifest ExtUtils::Mkbootstrap
+ExtUtils::Mksymlists ExtUtils::MM_Any ExtUtils::MM_BeOS
+ExtUtils::MM_Cygwin ExtUtils::MM_DOS ExtUtils::MM_MacOS
+ExtUtils::MM_NW5 ExtUtils::MM_OS2 ExtUtils::MM ExtUtils::MM_Unix
+ExtUtils::MM_UWIN ExtUtils::MM_VMS ExtUtils::MM_Win32
 ExtUtils::MM_Win95 ExtUtils::MY ExtUtils::Packlist ExtUtils::testlib
 Fatal fields File::Basename File::CheckTree File::Compare File::Copy
-File::DosGlob File::Find File::Path File::Spec::Cygwin File::Spec::Epoc
-File::Spec::Functions File::Spec::Mac File::Spec::OS2 File::Spec::Unix
-File::Spec::VMS File::Spec::Win32 File::Spec File::stat File::Temp
-FileCache FileHandle filetest Filter::Simple FindBin Getopt::Long
-Getopt::Std Hash::Util I18N::Collate I18N::LangTags::List I18N::LangTags
-if integer IPC::Open2 IPC::Open3 less Locale::Constants Locale::Country
-Locale::Currency Locale::Language Locale::Maketext::GutsLoader
-Locale::Maketext::Guts Locale::Maketext Locale::Script locale
-Math::BigFloat Math::BigFloat::Trace Math::BigInt::Calc
-Math::BigInt::Scalar Math::BigInt::Trace Math::BigInt Math::BigRat
-Math::Complex Math::Trig Memoize::AnyDBM_File Memoize::ExpireFile
-Memoize::Expire Memoize::ExpireTest Memoize::NDBM_File
-Memoize::SDBM_File Memoize::Storable Memoize Net::Cmd Net::Config
-Net::Domain Net::FTP::A Net::FTP::dataconn Net::FTP::E Net::FTP::I
-Net::FTP::L Net::FTP Net::hostent Net::netent Net::Netrc Net::NNTP
-Net::Ping Net::POP3 Net::protoent Net::servent Net::SMTP Net::Time NEXT
-open overload PerlIO PerlIO::via::QuotedPrint Pod::Checker Pod::Find
-Pod::Functions Pod::Html Pod::InputObjects Pod::LaTeX Pod::Man
-Pod::ParseLink Pod::Parser Pod::ParseUtils Pod::Perldoc::BaseTo
+File::DosGlob File::Find File::Path File::Spec::Cygwin
+File::Spec::Epoc File::Spec::Functions File::Spec::Mac File::Spec::OS2
+File::Spec::Unix File::Spec::VMS File::Spec::Win32 File::Spec
+File::stat File::Temp FileCache FileHandle filetest Filter::Simple
+FindBin Getopt::Long Getopt::Std Hash::Util I18N::Collate
+I18N::LangTags::List I18N::LangTags if integer IO::File IO::File
+IO::Handle IO::Pipe IO::Seekable IO::Select IO::Socket
+IO::Socket::INET IO::Socket::Unix IPC::Open2 IPC::Open3 less
+Locale::Constants Locale::Country Locale::Currency Locale::Language
+Locale::Maketext::GutsLoader Locale::Maketext::Guts Locale::Maketext
+Locale::Script locale Math::BigFloat Math::BigFloat::Trace
+Math::BigInt::Calc Math::BigInt::Scalar Math::BigInt::Trace
+Math::BigInt Math::BigRat Math::Complex Math::Trig
+Memoize::AnyDBM_File Memoize::ExpireFile Memoize::Expire
+Memoize::ExpireTest Memoize::NDBM_File Memoize::SDBM_File
+Memoize::Storable Memoize Net::Cmd Net::Config Net::Domain Net::FTP::A
+Net::FTP::dataconn Net::FTP::E Net::FTP::I Net::FTP::L Net::FTP
+Net::hostent Net::netent Net::Netrc Net::NNTP Net::Ping Net::POP3
+Net::protoent Net::servent Net::SMTP Net::Time NEXT open overload
+PerlIO PerlIO::via::QuotedPrint Pod::Checker Pod::Find Pod::Functions
+Pod::Html Pod::InputObjects Pod::LaTeX Pod::Man Pod::ParseLink
+Pod::Parser Pod::ParseUtils Pod::Perldoc::BaseTo
 Pod::Perldoc::GetOptsOO Pod::Perldoc::ToChecker Pod::Perldoc::ToMan
 Pod::Perldoc::ToNroff Pod::Perldoc::ToPod Pod::Perldoc::ToRtf
-Pod::Perldoc::ToText Pod::Perldoc::ToTk Pod::Perldoc::ToXml Pod::Perldoc
-Pod::Plainer Pod::PlainText Pod::Select Pod::Text::Color
-Pod::Text::Overstrike Pod::Text::Termcap Pod::Text Pod::Usage
-Search::Dict SelectSaver SelfLoader Shell sigtrap sort strict subs
-Switch Symbol Term::ANSIColor Term::Cap Term::Complete Term::ReadLine
-Test::Builder Test::Harness::Assert Test::Harness::Iterator
-Test::Harness::Straps Test::Harness Test::More Test::Simple Test
-Text::Abbrev Text::Balanced Text::ParseWords Text::Soundex Text::Tabs
-Text::Wrap Thread Thread::Queue Thread::Semaphore Tie::Array Tie::File
-Tie::Handle Tie::Hash Tie::Memoize Tie::RefHash Tie::Scalar
-Tie::SubstrHash Time::gmtime Time::Local Time::localtime Time::tm
-Unicode::Collate Unicode::UCD UNIVERSAL User::grent User::pwent utf8
-vars vmsish warnings warnings::register);
+Pod::Perldoc::ToText Pod::Perldoc::ToTk Pod::Perldoc::ToXml
+Pod::Perldoc Pod::Plainer Pod::PlainText Pod::Select Pod::Text::Color
+Pod::Text::Overstrike Pod::Text::Termcap Pod::Text Pod::Usage POSIX
+Search::Dict SelectSaver SelfLoader Shell sigtrap Socket sort strict
+subs Switch Symbol Term::ANSIColor Term::Cap Term::Complete
+Term::ReadLine Test::Builder Test::Harness::Assert
+Test::Harness::Iterator Test::Harness::Straps Test::Harness Test::More
+Test::Simple Test Text::Abbrev Text::Balanced Text::ParseWords
+Text::Soundex Text::Tabs Text::Wrap Thread Thread::Queue
+Thread::Semaphore Tie::Array Tie::File Tie::Handle Tie::Hash
+Tie::Memoize Tie::RefHash Tie::Scalar Tie::SubstrHash Time::gmtime
+Time::Local Time::localtime Time::tm Unicode::Collate Unicode::UCD
+UNIVERSAL User::grent User::pwent utf8 vars vmsish warnings
+warnings::register);
 
 my $perl_pkg = get_perl_pkg_details();
 
@@ -647,7 +663,8 @@ sub extract_docs {
 }
 
 sub extract_depends {
-	my ($dir, $meta, %dep_hash, $error, @uses, @deps, @not_debs);
+	my ($dir, $meta, %dep_hash, $error, @uses, @deps, @not_debs,
+	    $has_apt_file);
 	$dir = shift;
 	$meta = shift;
 	local @INC = ($dir, @INC);
@@ -694,6 +711,7 @@ sub extract_depends {
 	}
 
 	if (`which apt-file`) {
+	    $has_apt_file = 1;
 	    foreach my $module (@uses) {
 		my (@search, $ls, $ver, $re, $mod);
 
@@ -743,13 +761,24 @@ sub extract_depends {
 	print "Needs the following debian packages: " .
 	    join (", ", map {$_->{name}} @deps) . "\n" if (@deps);
 	if (@not_debs) {
-		my $missing_debs_str = "Needs the following modules for which there are no debian packages available: "
-			. join (", ", @not_debs) . "\n";
-		if ( $opts{requiredeps} ) {
-			die $missing_debs_str;
-		} else {
-			print $missing_debs_str;
-		}
+	    my ($missing_debs_str);
+	    if ($has_apt_file) {
+		$missing_debs_str = join("\n", "Needs the following modules for which there are no debian packages available",
+					 map({" - $_"} @not_debs), '');
+	    } else {
+		$missing_debs_str = join("\n", "The following Perl modules are required and not installed in your system:",
+					 map({" - $_"} @not_debs),
+					 "You do not have 'apt-file' currently installed - If you install it, I will",
+					 "be able to tell you which Debian packages are those modules in (if they are",
+					 "packaged).");
+	    }
+
+	    if ( $opts{requiredeps} ) {
+		die $missing_debs_str;
+	    } else {
+		print $missing_debs_str;
+	    }
+	    
 	}
 
 	return join (", ", map { $_->{version} ?
