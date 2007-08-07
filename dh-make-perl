@@ -84,102 +84,28 @@ sub interior_sequence {
 ######################################################################
 # Main dh-make-perl starts here, don't look any further!
 package main;
-my (@pragmas, @stdmodules);
-
-@pragmas = qw(attributes attrs autouse base bigint bignum
-	      bigrat blib bytes charnames constant
-	      diagnostics encoding fields filetest if 
-	      integer less lib locale open ops overload
-	      re sigtrap sort strict subs threads utf8
-	      vars vmsish warnings warnings::register);
-
-###
-### TO DO: This list is probably incomplete!
-###
-### @stdmodules should contain all the modules provided by the
-### required Perl packages (perl and perl-base). We should also debate
-### whether it should also include tmodules in perl-modules (which is
-### build-essential and standard).
-### 
-### Right now, as you can see, it's just a... Hand-maintained
-### list. Which does not scale.
-
-@stdmodules = qw(AnyDBM_File Attribute::Handlers::demo::Demo
-Attribute::Handlers::demo::Descriptions
-Attribute::Handlers::demo::MyClass Attribute::Handlers attributes
-AutoLoader AutoSplit autouse base Benchmark bigint bignum bigrat blib
-bytes Carp::Heavy Carp CGI::Apache CGI::Carp CGI::Cookie CGI::Fast
-CGI::Pretty CGI::Push CGI::Switch CGI::Util CGI charnames Class::ISA
-Class::Struct constant CPAN::FirstTime CPAN::Nox CPAN Cwd DB
-Devel::SelfStubber diagnostics Digest DirHandle Dumpvalue English Env
-Exporter::Heavy Exporter ExtUtils::Command::MM ExtUtils::Command
-ExtUtils::Constant ExtUtils::Embed ExtUtils::Installed
-ExtUtils::Install ExtUtils::Liblist::Kid ExtUtils::Liblist
-ExtUtils::MakeMaker::bytes ExtUtils::MakeMaker::vmsish
-ExtUtils::MakeMaker ExtUtils::Manifest ExtUtils::Mkbootstrap
-ExtUtils::Mksymlists ExtUtils::MM_Any ExtUtils::MM_BeOS
-ExtUtils::MM_Cygwin ExtUtils::MM_DOS ExtUtils::MM_MacOS
-ExtUtils::MM_NW5 ExtUtils::MM_OS2 ExtUtils::MM ExtUtils::MM_Unix
-ExtUtils::MM_UWIN ExtUtils::MM_VMS ExtUtils::MM_Win32
-ExtUtils::MM_Win95 ExtUtils::MY ExtUtils::Packlist ExtUtils::testlib
-Fatal fields File::Basename File::CheckTree File::Compare File::Copy
-File::DosGlob File::Find File::Path File::Spec::Cygwin
-File::Spec::Epoc File::Spec::Functions File::Spec::Mac File::Spec::OS2
-File::Spec::Unix File::Spec::VMS File::Spec::Win32 File::Spec
-File::stat File::Temp FileCache FileHandle filetest Filter::Simple
-FindBin Getopt::Long Getopt::Std Hash::Util I18N::Collate
-I18N::LangTags::List I18N::LangTags if integer IO::File IO::File
-IO::Handle IO::Pipe IO::Seekable IO::Select IO::Socket
-IO::Socket::INET IO::Socket::Unix IPC::Open2 IPC::Open3 less
-Locale::Constants Locale::Country Locale::Currency Locale::Language
-Locale::Maketext::GutsLoader Locale::Maketext::Guts Locale::Maketext
-Locale::Script locale Math::BigFloat Math::BigFloat::Trace
-Math::BigInt::Calc Math::BigInt::Scalar Math::BigInt::Trace
-Math::BigInt Math::BigRat Math::Complex Math::Trig
-Memoize::AnyDBM_File Memoize::ExpireFile Memoize::Expire
-Memoize::ExpireTest Memoize::NDBM_File Memoize::SDBM_File
-Memoize::Storable Memoize Net::Cmd Net::Config Net::Domain Net::FTP::A
-Net::FTP::dataconn Net::FTP::E Net::FTP::I Net::FTP::L Net::FTP
-Net::hostent Net::netent Net::Netrc Net::NNTP Net::Ping Net::POP3
-Net::protoent Net::servent Net::SMTP Net::Time NEXT open overload
-PerlIO PerlIO::via::QuotedPrint Pod::Checker Pod::Find Pod::Functions
-Pod::Html Pod::InputObjects Pod::LaTeX Pod::Man Pod::ParseLink
-Pod::Parser Pod::ParseUtils Pod::Perldoc::BaseTo
-Pod::Perldoc::GetOptsOO Pod::Perldoc::ToChecker Pod::Perldoc::ToMan
-Pod::Perldoc::ToNroff Pod::Perldoc::ToPod Pod::Perldoc::ToRtf
-Pod::Perldoc::ToText Pod::Perldoc::ToTk Pod::Perldoc::ToXml
-Pod::Perldoc Pod::Plainer Pod::PlainText Pod::Select Pod::Text::Color
-Pod::Text::Overstrike Pod::Text::Termcap Pod::Text Pod::Usage POSIX
-Search::Dict SelectSaver SelfLoader Shell sigtrap Socket sort strict
-subs Switch Symbol Term::ANSIColor Term::Cap Term::Complete
-Term::ReadLine Test::Builder Test::Harness::Assert
-Test::Harness::Iterator Test::Harness::Straps Test::Harness Test::More
-Test::Simple Test Text::Abbrev Text::Balanced Text::ParseWords
-Text::Soundex Text::Tabs Text::Wrap Thread Thread::Queue
-Thread::Semaphore Tie::Array Tie::File Tie::Handle Tie::Hash
-Tie::Memoize Tie::RefHash Tie::Scalar Tie::SubstrHash Time::gmtime
-Time::Local Time::localtime Time::tm Unicode::Collate Unicode::UCD
-UNIVERSAL User::grent User::pwent utf8 vars vmsish warnings
-warnings::register);
-
-my $perl_pkg = get_perl_pkg_details();
-
-my $debstdversion = '3.7.2';
-my $priority = 'optional';
-my $section = 'perl';
-my $depends = '${perl:Depends}';
-my $bdependsi = "perl (>= $perl_pkg->{Version})";
-my $bdepends = 'debhelper (>= 5.0.0)';
-my $maintainer = get_maintainer();
-my $arch = 'all';
-my $date = `date -R`;
-my $debiandir;
-my $startdir = getcwd();
-my $dh_compat = 5;
-
+my (@stdmodules, $perl_pkg, $debstdversion, $priority, $section, $depends, 
+    $bdepends, $bdependsi, $maintainer, $arch, $date, $debiandir, $startdir,
+    $dh_compat, $datadir, $homedir);
 our %overrides;
-my $datadir = '/usr/share/dh-make-perl';
-my $homedir = "$ENV{HOME}/.dh-make-perl";
+
+$perl_pkg = get_perl_pkg_details();
+
+$debstdversion = '3.7.2';
+$priority = 'optional';
+$section = 'perl';
+$depends = '${perl:Depends}';
+$bdependsi = "perl (>= $perl_pkg->{Version})";
+$bdepends = 'debhelper (>= 5.0.0)';
+$maintainer = get_maintainer();
+$arch = 'all';
+$date = `date -R`;
+$debiandir;
+$startdir = getcwd();
+$dh_compat = 5;
+$datadir = '/usr/share/dh-make-perl';
+$homedir = "$ENV{HOME}/.dh-make-perl";
+
 my ($perlname, $maindir, $modulepm, $meta);
 my ($pkgname, $srcname, 
     # $version is the version from the perl module itself
@@ -199,10 +125,13 @@ $opts{dbflags} = $>==0?"":"-rfakeroot";
 chomp($date);
 
 GetOptions(\%opts, 
-	   'arch=s', 'bdepends=s', 'bdependsi=s', 'build!', 'core-ok', 
-	   'cpan=s', 'cpanplus=s', 'cpan-mirror=s', 'dbflags=s', 'depends=s', 
-	   'desc=s', 'exclude|i:s{,}', 'help', 'install!', 'nometa', 'notest',
+	   'arch=s', 'basepkgs=s', 'bdepends=s', 'bdependsi=s',
+	   'build!', 'core-ok', 'cpan=s', 'cpanplus=s',
+	   'cpan-mirror=s', 'dbflags=s', 'depends=s', 'desc=s',
+	   'exclude|i:s{,}', 'help', 'install!', 'nometa', 'notest',
 	   'requiredeps', 'version=s') or die usage_instructions();
+
+@stdmodules = get_stdmodules();
 
 # Help requested? Nice, we can just die! Isn't it helpful?
 die usage_instructions() if $opts{help};
@@ -277,8 +206,29 @@ Other options: [ --desc DESCRIPTION ] [ --arch all|any ] [ --version VERSION ]
                [ --depends DEPENDS ] [ --bdepends BUILD-DEPENDS ]
                [ --bdependsi BUILD-DEPENDS-INDEP ] [ --cpan-mirror MIRROR ]
                [ --exclude|-i [REGEX] ] [ --notest ] [ --nometa ] 
-               [ --requiredeps ] [ --core-ok ]
+               [ --requiredeps ] [ --core-ok ] [ --basepkgs PKGSLIST ]
 USAGE
+}
+
+sub get_stdmodules {
+    my ($base_packages, @modules, $paths);
+    $base_packages = $opts{basepkgs} || 'perl,perl-base,perl-modules';
+
+    # We will check on all the base Perl packages for the modules they provide.
+    # To know which files we care for, we look at @INC - In a format easy to
+    # integrate into a regex
+    $paths = join('|', @INC);
+
+    for my $pkg (split(/,/,$base_packages)) {
+	for my $file (map {chomp;$_} `dpkg -L $pkg`) {
+	    next unless $file =~ s!^(?:$paths)[\d\.]*/(.*).pm$!$1!x;
+
+	    $file =~ s!/!::!g;
+	    push @modules, $file;
+	}
+    }
+
+    return sort @modules;
 }
 
 sub get_perl_pkg_details {
@@ -293,8 +243,7 @@ sub setup_dir {
 	if ($opts{cpan}) {
 	        my ($new_maindir);
 		# Is the module a core module?
-		if ((grep(/$opts{cpan}/, @pragmas)) ||
-		    (grep(/$opts{cpan}/, @stdmodules))) {
+		if (grep(/$opts{cpan}/, @stdmodules)) {
 		        die "$opts{cpan} is a standard module.\n" 
 			    unless $opts{'core-ok'};
 		}	
@@ -705,7 +654,7 @@ sub extract_depends {
 	}
 
 	foreach my $module (keys( %dep_hash )) {
-		next if (grep ( /^$module$/, @pragmas, @stdmodules));
+		next if (grep ( /^$module$/, @stdmodules));
 		
 		push @uses, $module;
 	}
@@ -737,7 +686,8 @@ sub extract_depends {
 		    chomp; 
 		    my ($p, $f) = split / /, $_;
 		    chop($p); #Get rid of the ":"
-		    if ($f =~ /$re/ && ! grep { $_ eq $p } @deps, "perl", "perl-base", "perl-modules") {
+		    if ($f =~ /$re/ && ! 
+			grep { $_ eq $p } @deps, split(/,/,$opts{basepkgs})) {
 			if (exists $dep_hash{$mod}) {
 			    push @deps, {name=>$p, 
 					 version=>$dep_hash{$mod}};
@@ -1158,6 +1108,24 @@ package will not be installed unless it was built (obviously ;-) )
 
 Does not run the automatic testing of the module as part of the build script.
 This is mostly useful when packaging buggy or incomplete software.
+
+=item B<--basepkgs>
+
+Explicitly gives a comma-separated list of packages to consider "base"
+packages (i.e. packages that should always be available in Debian
+systems). This option defaults to C<perl,perl-base,perl-modules> - It
+is used to check for module dependencies. If a needed module is in the
+C<basepkgs>, it won't be mentioned in the C<depends:> field of
+C<debian/control>.
+
+If this option is specified, the above mentioned default packages will
+not be included (but will be mentioned as explicit dependencies in the
+resulting package). You can, of course, mention your own modules
+and explicitly specify the default values.
+
+Note that this option should be used sparsingly and with care, as it
+might lead to packages not being rebuildable because of unfulfilled
+dependencies.
 
 =item B<--requiredeps>
 
