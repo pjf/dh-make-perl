@@ -7,8 +7,10 @@ dh-make-perl (0.28) unstable; urgency=low
   * Pragmas and base modules are handled the same way - There is no real
     way to differentiate them... And they were used interchangeably, so
     there ;-)
+  * Homogeneized the usage of dh_* helpers in the different cases of
+    generated debian/rules
 
- -- Gunnar Wolf <gwolf@debian.org>  Tue, 07 Aug 2007 12:32:26 -0500
+ -- Gunnar Wolf <gwolf@debian.org>  Wed, 15 Aug 2007 12:36:37 -0500
 
 dh-make-perl (0.27) unstable; urgency=low
 

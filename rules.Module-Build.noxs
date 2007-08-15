@@ -28,7 +28,7 @@ build-stamp:
 
 	# Add commands to compile the package here
 	$(PERL) Build.PL installdirs=vendor
-	OPTIMIZE="-Wall -O2 -g" $(PERL) Build
+	$(PERL) Build
 
 	touch build-stamp
 
@@ -59,14 +59,10 @@ binary-arch:
 binary-indep: build install
 	dh_testdir
 	dh_testroot
-#	dh_installcron
-#	dh_installmenu
-#	dh_installexamples
 	dh_installdocs #DOCS#
+	dh_installexamples
 	dh_installchangelogs #CHANGES#
 	dh_perl
-	dh_link
-	dh_strip
 	dh_compress
 	dh_fixperms
 	dh_installdeb

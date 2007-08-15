@@ -72,20 +72,14 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_installdocs #DOCS#
 	dh_installexamples 
-#	dh_installmenu
-#	dh_installcron
-#	dh_installman
+	dh_installdocs #DOCS#
 	dh_installchangelogs #CHANGES#
-	dh_link
 	dh_strip
+	dh_perl 
 	dh_compress
 	dh_fixperms
-	dh_makeshlibs
 	dh_installdeb
-	dh_perl 
-	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
