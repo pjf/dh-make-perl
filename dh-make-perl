@@ -100,7 +100,6 @@ $bdepends = 'debhelper (>= 5.0.0)';
 $maintainer = get_maintainer();
 $arch = 'all';
 $date = `date -R`;
-$debiandir;
 $startdir = getcwd();
 $dh_compat = 5;
 $datadir = '/usr/share/dh-make-perl';
