@@ -61,7 +61,7 @@ install-stamp:
 
 # Build architecture-independent files here.
 binary-indep: build install
-# We have nothing to do by default.
+# We have nothing to do here for an architecture-dependent package
 
 # Build architecture-dependent files here.
 binary-arch: build install

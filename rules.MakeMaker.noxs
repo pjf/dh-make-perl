@@ -56,7 +56,7 @@ install-stamp:
 	touch install-stamp
 
 binary-arch:
-# We have nothing to do by default.
+# We have nothing to do here for an architecture-independent package
 
 binary-indep: build install
 	dh_testdir
