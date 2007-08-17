@@ -35,6 +35,7 @@ build-stamp:
 	# Add commands to compile the package here
 	$(PERL) Makefile.PL INSTALLDIRS=vendor
 	$(MAKE) OPTIMIZE="$(CFLAGS)" LD_RUN_PATH=""
+	#TEST#
 
 	touch build-stamp
 
@@ -54,7 +55,6 @@ install-stamp:
 	dh_clean -k
 
 	# Add commands to install the package into debian/$PACKAGE_NAME here
-	#TEST#
 	$(MAKE) install DESTDIR=$(TMP) PREFIX=/usr
 
 	# As this is a architecture dependent package, we are not
