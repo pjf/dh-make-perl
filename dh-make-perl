@@ -912,8 +912,8 @@ sub create_watch {
 	$perl_path_name .= "-(.*)\.(tar\.gz|tar|tgz)";
 
 	$fh->print(
-"\# format version number, currently 2; this line is compulsory!
-version=2
+"\# format version number, currently 3; this line is compulsory!
+version=3
 http://www.cpan.org/modules/by-module/$perl_path_name
 ");
 	$fh->close;
