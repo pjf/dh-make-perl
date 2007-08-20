@@ -128,7 +128,7 @@ GetOptions(\%opts,
 	   'build!', 'core-ok', 'cpan=s', 'cpanplus=s',
 	   'cpan-mirror=s', 'dbflags=s', 'depends=s', 'desc=s',
 	   'exclude|i:s{,}', 'help', 'install!', 'nometa', 'notest',
-	   'requiredeps', 'version=s') or die usage_instructions();
+	   'pkg-perl!', 'requiredeps', 'version=s') or die usage_instructions();
 
 @stdmodules = get_stdmodules();
 
@@ -802,8 +802,20 @@ sub create_control {
 	$fh->print("Build-Depends: $bdepends\n") if $bdepends;
 	$fh->print("Build-Depends-Indep: $bdependsi\n") if $bdependsi;
 	$fh->print($extrasfields) if defined $extrasfields;
-	$fh->print("Maintainer: $maintainer\n");
+        if( $opts{'pkg-perl'} )
+        {
+            $fh->print("Maintainer: Debian Perl Group <pkg-perl-maintainers\@lists.alioth.debian.org>\n");
+            $fh->print("Uploaders: $maintainer\n");
+        }
+        else
+        {
+            $fh->print("Maintainer: $maintainer\n");
+        }
 	$fh->print("Standards-Version: $debstdversion\n");
+        do {
+            $fh->print("XS-Vcs-Svn: svn://svn.debian.org/pkg-perl/trunk/$srcname/\n");
+            $fh->print("XS-Vcs-Browser: http://svn.debian.org/wsvn/pkg-perl/trunk/$srcname/\n");
+        } if $opts{'pkg-perl'};
 	$fh->print("\n");
 	$fh->print("Package: $pkgname\n");
 	$fh->print("Architecture: $arch\n");
