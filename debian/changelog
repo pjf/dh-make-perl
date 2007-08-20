@@ -13,6 +13,7 @@ dh-make-perl (0.28) unstable; urgency=low
 
   [ Damyan Ivanov ]
   * current watch file version is 3, this is what we generate too
+    stricter debian/watch patterns, omit capturing file extension
   * Move tests from install to build target
   * better explaination in binary-arch target for arch-indep packages and in
     binary-indep target of arch-dep packages why the target is empty
@@ -21,7 +22,7 @@ dh-make-perl (0.28) unstable; urgency=low
     fields to debian/control and sets the Maintainer and Uploaders fields
     accordingly
 
- -- Damyan Ivanov <dmn@debian.org>  Mon, 20 Aug 2007 08:51:27 +0300
+ -- Damyan Ivanov <dmn@debian.org>  Mon, 20 Aug 2007 10:26:31 +0300
 
 dh-make-perl (0.27) unstable; urgency=low
 

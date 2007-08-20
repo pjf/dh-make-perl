@@ -921,7 +921,7 @@ sub create_watch {
 	
 	$perl_path_name =~ s|::|-|g;
 	$perl_path_name =~ s|(\w+)(-.*)|$1/$1$2|;
-	$perl_path_name .= "-(.*)\.(tar\.gz|tar|tgz)";
+	$perl_path_name .= '-([\.\d]+)\.(?:tar\.gz|tar|tgz)';
 
 	$fh->print(
 "\# format version number, currently 3; this line is compulsory!
