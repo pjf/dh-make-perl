@@ -70,6 +70,7 @@ binary-arch: build install
 	dh_installdocs #DOCS#
 	dh_installexamples 
 	dh_installchangelogs #CHANGES#
+	dh_shlibdeps
 	dh_strip
 	dh_perl
 	dh_compress
