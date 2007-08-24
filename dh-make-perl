@@ -858,6 +858,8 @@ sub create_compat {
 
 sub create_copyright {
         my $fh = _file_w(shift);
+	my $incomplete = '';
+
 	$fh->print(
 "This is the debian package for the $perlname module.
 It was created by $maintainer using dh-make-perl.
@@ -865,6 +867,8 @@ It was created by $maintainer using dh-make-perl.
 ");
         if (defined $upsurl) {
                 $fh->print("It was downloaded from $upsurl\n\n");
+	} else {
+	        $incomplete .= "No upstream URL\n";
         }
 	$fh->print(
 "This copyright info was automatically extracted from the perl module.
@@ -874,7 +878,10 @@ if don\'t want to get into legal troubles.
 ");
 	if (defined $author) {
 		$fh->print("The upstream author is: $author.\n");
+	} else {
+	        $incomplete .= "No upstream author\n";
 	}
+
 	if (defined($copyright)) {
 		$fh->print($copyright);
 		# Fun with regexes
@@ -893,6 +900,8 @@ The full text of the GPL is available on Debian systems in
 /usr/share/common-licenses/GPL
 ");
 		}
+	} else {
+	        $incomplete .= "No licensing information\n";
 	}
 
 	my $year = (localtime)[5]+1900;
@@ -903,6 +912,10 @@ is licensed under the same terms as the software itself (see above).
 ");
 
 	$fh->close;
+
+	if ($incomplete) {
+	    _warn_incomplete_copyright($incomplete)
+	}
 }
 
 sub create_readme {
@@ -1020,6 +1033,21 @@ sub get_override_val {
 	$val = defined($data->{$subkey.$key})?$data->{$subkey.$key}:$data->{$key};
 	return &$val() if (defined($val) && ref($val) eq 'CODE');
 	return $val;
+}
+
+sub _warn_incomplete_copyright {
+    print '*'x10, '
+Copyright information incomplete!
+
+Upstream copyright information could not be automatically determined.
+
+If you are building this package for your personal use, you might disregard
+this information; however, if you intend to upload this package to Debian
+(or in general, if you plan on distributing it), you must look into the
+complete copyright information.
+
+The causes for this warning are:
+', @_;
 }
 
 sub _file_r {

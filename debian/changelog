@@ -1,9 +1,13 @@
 dh-make-perl (0.29) unstable; urgency=low
 
+  [ Damyan Ivanov ]
   * rules*.xs: add a call to dh_shlibdeps for arch-dependent packages
     Thanks to Martín Ferrari for spotting
 
- -- Damyan Ivanov <dmn@debian.org>  Tue, 21 Aug 2007 09:47:49 +0300
+  [ Gunnar Wolf ]
+  * Added warning when the extracted copyright information is incomplete
+
+ -- Gunnar Wolf <gwolf@debian.org>  Fri, 24 Aug 2007 13:45:24 -0500
 
 dh-make-perl (0.28) unstable; urgency=low
 
