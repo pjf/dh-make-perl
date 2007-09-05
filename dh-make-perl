@@ -1103,7 +1103,10 @@ Manually specify the string to be used for the module's dependencies. This
 should be used when building modules where dh-make-perl cannot guess the Perl
 dependencies (such as modules built using L<Module::Install>), or when the
 Perl code depends on non-Perl binaries or libraries. Usually, dh-make-perl
-will figure out the dependencies by itself.
+will figure out the dependencies by itself. If you need to pass dh-make-perl
+dependency information, you must do it using the debian package format. i.e.
+
+dh-make-perl --depends libtest-more-perl 
 
 =item B<--bdepends> I<BUILD-DEPENDS>
 
