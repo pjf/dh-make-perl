@@ -37,10 +37,10 @@ clean:
 	dh_testdir
 	dh_testroot
 
+	dh_clean build-stamp install-stamp
+
 	# Add commands to clean up after the build process here
 	[ ! -f Build ] || $(PERL) Build distclean
-
-	dh_clean build-stamp install-stamp
 
 install: build install-stamp
 install-stamp:
