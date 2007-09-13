@@ -1,3 +1,12 @@
+dh-make-perl (0.31) unstable; urgency=low
+
+  * rules.MakeMaker.*: changed approach to the removal of unneeded (and
+    unwanted) dirs:
+    - /usr/lib/perl5/ for architecture-independent packages;
+    - /usr/share/perl5/ for architecture-dependent packages
+
+ -- David Paleino <d.paleino@gmail.com>  Thu, 13 Sep 2007 22:50:06 +0200
+
 dh-make-perl (0.30) unstable; urgency=low
 
   [ Gunnar Wolf ]

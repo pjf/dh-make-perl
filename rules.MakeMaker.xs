@@ -32,12 +32,19 @@ build: build-stamp
 build-stamp:
 	dh_testdir
 
+	# As this is a architecture dependent package, we are not
+	# supposed to install stuff to /usr/share. MakeMaker creates
+	# the dirs, we prevent this by setting the INSTALLVENDORARCH
+	# and VENDORARCHEXP environment variables.
+
 	# Add commands to compile the package here
-	$(PERL) Makefile.PL INSTALLDIRS=vendor
+	$(PERL) Makefile.PL INSTALLDIRS=vendor \
+		INSTALLVENDORARCH=/usr/lib/perl5/ \
+		VENDORARCHEXP=/usr/lib/perl5/
 	$(MAKE) OPTIMIZE="$(CFLAGS)" LD_RUN_PATH=""
 	#TEST#
 
-	touch build-stamp
+	touch $@
 
 clean:
 	dh_testdir
@@ -57,12 +64,7 @@ install-stamp:
 	# Add commands to install the package into debian/$PACKAGE_NAME here
 	$(MAKE) install DESTDIR=$(TMP) PREFIX=/usr
 
-	# As this is a architecture dependent package, we are not
-	# supposed to install stuff to /usr/share. MakeMaker creates
-	# the dirs, we delete them from the deb:
-	rmdir --ignore-fail-on-non-empty --parents $(TMP)/usr/share/perl5
-
-	touch install-stamp
+	touch $@
 
 # Build architecture-independent files here.
 binary-indep: build install
