@@ -1123,6 +1123,14 @@ Note that for --depends, --bdepends and --bdependsi you can also specify that
 the field should not appear in debian/rules (if you really mean it, of course
 ;-) ) by giving it an empty string as an argument.
 
+=item B<--pkg-perl>
+
+Useful when preparing a package for the Debian Perl Group
+L<http://pkg-perl.alioth.debian.org>.
+
+Sets C<Maintainer>, C<Uploaders>, C<XS-Vcs-Svn> and C<XS-Vcs-Browser> fields in
+debian/control accordingly.
+
 =item B<--cpan-mirror> I<MIRROR>
 
 Specifies a CPAN site to use as mirror.

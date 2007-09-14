@@ -9,8 +9,9 @@ dh-make-perl (0.31) unstable; urgency=low
   [ Damyan Ivanov ]
   * Use http://search.cpan.org/dist/$perlname/ for upstream URL, watch and
     Homepage. Idea borrowed from David Paleino.
+  * Document --pkg-perl option
 
- -- Damyan Ivanov <dmn@debian.org>  Fri, 14 Sep 2007 11:23:00 +0300
+ -- Damyan Ivanov <dmn@debian.org>  Fri, 14 Sep 2007 11:38:10 +0300
 
 dh-make-perl (0.30) unstable; urgency=low
 
