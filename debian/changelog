@@ -1,11 +1,16 @@
 dh-make-perl (0.31) unstable; urgency=low
 
+  [ David Paleino ]
   * rules.MakeMaker.*: changed approach to the removal of unneeded (and
     unwanted) dirs:
     - /usr/lib/perl5/ for architecture-independent packages;
     - /usr/share/perl5/ for architecture-dependent packages
 
- -- David Paleino <d.paleino@gmail.com>  Thu, 13 Sep 2007 22:50:06 +0200
+  [ Damyan Ivanov ]
+  * Use http://search.cpan.org/dist/$perlname/ for upstream URL, watch and
+    Homepage. Idea borrowed from David Paleino.
+
+ -- Damyan Ivanov <dmn@debian.org>  Fri, 14 Sep 2007 11:23:00 +0300
 
 dh-make-perl (0.30) unstable; urgency=low
 

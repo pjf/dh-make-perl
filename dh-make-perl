@@ -275,14 +275,12 @@ sub setup_dir {
 			$dist->get || die "Cannot get $mod->{CPAN_FILE}\n";
 			$tarball .= $mod->{CPAN_FILE};
 			$maindir = $dist->{'build_dir'};
-			$upsurl = "http://www.cpan.org/authors/id/" . $mod->{CPAN_FILE};
 		} else {
 			# CPAN internals changed
 			$dist = $CPAN::META->instance('CPAN::Distribution', $mod->cpan_file);
 			$dist->get || die "Cannot get ", $mod->cpan_file, "\n";
 			$tarball .= $mod->cpan_file;
 			$maindir = $dist->dir;
-			$upsurl = "http://www.cpan.org/authors/id/" . $mod->cpan_file;
 		}
 
 		copy ($tarball, $ENV{'PWD'});
@@ -383,6 +381,8 @@ sub extract_basic {
 
     print "Found: $perlname $version ($pkgname arch=$arch)\n";
     $debiandir = "$maindir/debian";
+
+    $upsurl = "http://search.cpan.org/dist/$perlname/";
 
     $copyright = extract_basic_copyright();
     if ($modulepm) {
@@ -822,6 +822,7 @@ sub create_control {
 	$fh->print("Depends: $depends\n") if $depends;
 	$fh->print($extrapfields) if defined $extrapfields;
 	$fh->print("Description: $desc\n$longdesc\n .\n This description was automagically extracted from the module by dh-make-perl.\n");
+	$fh->print(" .\n  Homepage: $upsurl\n") if $upsurl;
 	$fh->close;
 }
 
@@ -928,18 +929,14 @@ It was created by $maintainer using dh-make-perl.
 }
 
 sub create_watch {
-        my ($fh, $perl_path_name);
-	$fh = _file_w(shift);
-	$perl_path_name = shift;
-	
-	$perl_path_name =~ s|::|-|g;
-	$perl_path_name =~ s|(\w+)(-.*)|$1/$1$2|;
-	$perl_path_name .= '-([\.\d]+)\.(?:tar\.gz|tar|tgz)';
+	my $fh = _file_w(shift);
+
+	my $version_re = '([\.\d]+)\.(?:tar\.gz|tar|tgz)';
 
 	$fh->print(
 "\# format version number, currently 3; this line is compulsory!
 version=3
-http://www.cpan.org/modules/by-module/$perl_path_name
+$upsurl .*/$perlname-$version_re\$
 ");
 	$fh->close;
 }
