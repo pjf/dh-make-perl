@@ -147,8 +147,10 @@ if (defined $opts{desc}) {
   $desc = $opts{desc};
 }
 ($pkgname, $version) = extract_basic();
-if (! defined $pkgversion) {
+unless (defined $opts{version}) {
 	$pkgversion = $version . "-1";
+} else {
+	$pkgversion = $opts{version};
 }
 move ($tarball, dirname($tarball) . "/${pkgname}_${version}.orig.tar.gz") if ($tarball && $tarball =~ /(?:\.tar\.gz|\.tgz)$/);
 my $module_build = (-f "$maindir/Build.PL") ? "Module-Build" : "MakeMaker";
@@ -474,9 +476,9 @@ sub extract_name_ver_from_makefile {
 	$name = $opts{cpanplus} if ($name eq '__PACKAGE__' && $opts{cpanplus});
 
 	# Get the version
-	if (defined $pkgversion) {
+	if (defined $opts{version}) {
 	    # Explicitly specified
-	    $ver = $pkgversion;
+	    $ver = $opts{version};
 
 	} elsif ($file =~ /([\'\"]?)VERSION\1\s*(=>|,)\s*([\'\"]?)(\S+)\3/s) {
 	    # Regular MakeMaker

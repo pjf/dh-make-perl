@@ -1,3 +1,11 @@
+dh-make-perl (0.32) UNRELEASED; urgency=low
+
+  [ Frank Lichtenheld ]
+  * Unbreak handling of --version which was broken by the
+    getopts overhaul in 0.27
+
+ -- Frank Lichtenheld <djpig@debian.org>  Sat, 15 Sep 2007 21:33:42 +0200
+
 dh-make-perl (0.31) unstable; urgency=low
 
   [ David Paleino ]
