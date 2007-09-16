@@ -85,8 +85,8 @@ sub interior_sequence {
 # Main dh-make-perl starts here, don't look any further!
 package main;
 my (@stdmodules, $perl_pkg, $debstdversion, $priority, $section, $depends, 
-    $bdepends, $bdependsi, $maintainer, $arch, $date, $debiandir, $startdir,
-    $dh_compat, $datadir, $homedir);
+    $bdepends, $bdependsi, $maintainer, $arch, $closes, $date, $debiandir,
+    $startdir, $dh_compat, $datadir, $homedir);
 our %overrides;
 
 $perl_pkg = get_perl_pkg_details();
@@ -99,6 +99,7 @@ $bdependsi = "perl (>= $perl_pkg->{Version})";
 $bdepends = 'debhelper (>= 5.0.0)';
 $maintainer = get_maintainer();
 $arch = 'all';
+$closes = 'nnnnnn';
 $date = `date -R`;
 $startdir = getcwd();
 $dh_compat = 5;
@@ -125,7 +126,7 @@ chomp($date);
 
 GetOptions(\%opts, 
 	   'arch=s', 'basepkgs=s', 'bdepends=s', 'bdependsi=s',
-	   'build!', 'core-ok', 'cpan=s', 'cpanplus=s',
+	   'build!', 'core-ok', 'cpan=s', 'cpanplus=s', 'closes=i', 
 	   'cpan-mirror=s', 'dbflags=s', 'depends=s', 'desc=s',
 	   'exclude|i:s{,}', 'help', 'install!', 'nometa', 'notest',
 	   'pkg-perl!', 'requiredeps', 'version=s') or die usage_instructions();
@@ -186,7 +187,10 @@ print "Found docs: @docs\n";
 # start writing out the data
 mkdir ($debiandir, 0755) || die "Cannot create $debiandir dir: $!\n";
 create_control("$debiandir/control");
-create_changelog("$debiandir/changelog");
+if (defined $opts{closes}) {
+    $closes = $opts{closes};
+}
+create_changelog("$debiandir/changelog", $closes);
 create_rules("$debiandir/rules");
 create_compat("$debiandir/compat");
 create_watch("$debiandir/watch", $opts{cpan}) if ($opts{cpan});
@@ -208,6 +212,7 @@ Other options: [ --desc DESCRIPTION ] [ --arch all|any ] [ --version VERSION ]
                [ --bdependsi BUILD-DEPENDS-INDEP ] [ --cpan-mirror MIRROR ]
                [ --exclude|-i [REGEX] ] [ --notest ] [ --nometa ] 
                [ --requiredeps ] [ --core-ok ] [ --basepkgs PKGSLIST ]
+               [ --closes ITPBUG ]
 USAGE
 }
 
@@ -830,8 +835,9 @@ sub create_control {
 
 sub create_changelog {
 	my $fh = _file_w(shift);
+	my $bug = shift;
 	$fh->print("$srcname ($pkgversion) unstable; urgency=low\n");
-	$fh->print("\n  * Initial Release.\n\n");
+	$fh->print("\n  * Initial Release (Closes: #$bug).\n\n");
 	$fh->print(" -- $maintainer  $date\n");
 	#$fh->print("Local variables:\nmode: debian-changelog\nEnd:\n");
 	$fh->close
@@ -1095,6 +1101,10 @@ decide this alone.
 =item B<--version> I<VERSION>
 
 Specifies the version of the resulting package.
+
+=item B<--closes> I<ITPBUG>
+
+Specifies the ITP bug number that this package closes.
 
 =item B<--depends> I<DEPENDS>
 
