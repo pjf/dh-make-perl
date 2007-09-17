@@ -858,7 +858,7 @@ sub create_changelog {
 	my $fh = _file_w(shift);
 	my $bug = shift;
 	
-	my $closes = "(Closes: #$bug)" if $bug;
+	my $closes = $bug ? " (Closes: #$bug)" : '';
 
 	$fh->print("$srcname ($pkgversion) unstable; urgency=low\n");
 	$fh->print("\n  * Initial Release.$closes\n\n");
