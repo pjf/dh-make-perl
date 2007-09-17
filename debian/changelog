@@ -1,4 +1,4 @@
-dh-make-perl (0.32) UNRELEASED; urgency=low
+dh-make-perl (0.32) unstable; urgency=low
 
   [ Frank Lichtenheld ]
   * Unbreak handling of --version which was broken by the
@@ -9,7 +9,7 @@ dh-make-perl (0.32) UNRELEASED; urgency=low
     the new package is going to close
   * Now dh-make-perl automagically fetches the ITP bug number from WNPP!
 
- -- David Paleino <d.paleino@gmail.com>  Mon, 17 Sep 2007 11:16:21 +0200
+ -- Damyan Ivanov <dmn@debian.org>  Mon, 17 Sep 2007 15:02:54 +0300
 
 dh-make-perl (0.31) unstable; urgency=low
 
