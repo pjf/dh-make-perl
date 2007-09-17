@@ -7,8 +7,9 @@ dh-make-perl (0.32) UNRELEASED; urgency=low
   [ David Paleino ]
   * Added new command line switch (--closes), to specify the ITP that
     the new package is going to close
+  * Now dh-make-perl automagically fetches the ITP bug number from WNPP!
 
- -- David Paleino <d.paleino@gmail.com>  Sun, 16 Sep 2007 13:13:55 +0200
+ -- David Paleino <d.paleino@gmail.com>  Mon, 17 Sep 2007 11:16:21 +0200
 
 dh-make-perl (0.31) unstable; urgency=low
 

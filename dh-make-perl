@@ -99,7 +99,6 @@ $bdependsi = "perl (>= $perl_pkg->{Version})";
 $bdepends = 'debhelper (>= 5.0.0)';
 $maintainer = get_maintainer();
 $arch = 'all';
-$closes = 'nnnnnn';
 $date = `date -R`;
 $startdir = getcwd();
 $dh_compat = 5;
@@ -189,6 +188,8 @@ mkdir ($debiandir, 0755) || die "Cannot create $debiandir dir: $!\n";
 create_control("$debiandir/control");
 if (defined $opts{closes}) {
     $closes = $opts{closes};
+} else {
+    $closes = get_itp($pkgname);
 }
 create_changelog("$debiandir/changelog", $closes);
 create_rules("$debiandir/rules");
@@ -740,6 +741,30 @@ sub extract_depends {
 	return join (", ", map { $_->{version} ?
 				     $_->{name} ." (>= ". $_->{version} .")" :
 				     $_->{name} } @deps);
+}
+
+sub get_itp {
+    use WWW::Mechanize;
+    
+    my ($package) = shift @_;
+    
+    my $wnpp = 'http://www.debian.org/devel/wnpp/being_packaged';
+    my $mech = WWW::Mechanize->new();
+    
+    $mech->get($wnpp);
+    
+    my @links = $mech->links();
+    
+    foreach my $link (@links) {
+        my $href = $link->url();
+        my $desc = $link->text();
+        
+        if ($desc =~ /$package: .*/) {
+            $href =~ s/^.*\/(\d{6})$/$1/;
+            return $href;
+        }
+    }
+    return 'nnnnnn';
 }
 
 sub substitute_perl_dependency {
