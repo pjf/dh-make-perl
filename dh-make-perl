@@ -748,7 +748,7 @@ sub get_itp {
     
     my ($package) = shift @_;
     
-    my $wnpp = 'http://www.debian.org/devel/wnpp/being_packaged';
+    my $wnpp = "http://bugs.debian.org/cgi-bin/pkgreport.cgi?pkg=wnpp;includesubj=ITP:%20$package";
     my $mech = WWW::Mechanize->new();
     
     $mech->get($wnpp);
@@ -759,7 +759,7 @@ sub get_itp {
         my $href = $link->url();
         my $desc = $link->text();
         
-        if ($desc =~ /$package: .*/) {
+        if ($desc =~ /ITP: $package -- .*/) {
             $href =~ s/^.*\/(\d{6})$/$1/;
             return $href;
         }
