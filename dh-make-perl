@@ -1128,7 +1128,10 @@ Specifies the version of the resulting package.
 
 =item B<--closes> I<ITPBUG>
 
-Specifies the ITP bug number that this package closes.
+Manually specify the ITP bug number that this package closes. If not 
+given, dh-make-perl will try to connect to bugs.debian.org to fetch the 
+appropriate bug number, using WWW::Mechanize. If no bug is filed, then 
+on debian/changelog won't be added other than "* Initial release.".
 
 =item B<--depends> I<DEPENDS>
 
@@ -1322,6 +1325,7 @@ Patches from:
   Amos Shapira E<lt>amos.shapira@gmail.comE<gt>
   Christian Kurz E<lt>shorty@debian.orgE<gt>
   Damyan Ivanov E<lt>divanov@creditreform.bgE<gt>
+  David Paleino E<lt>d.paleino@gmail.comE<gt>
   David Pashley E<lt>david@davidpashley.comE<gt>
   Edward Betts E<lt>edward@debian.orgE<gt>
   Fermin Galan E<lt>galan@dit.upm.esE<gt>
