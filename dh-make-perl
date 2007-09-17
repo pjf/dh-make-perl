@@ -760,7 +760,7 @@ sub get_itp {
 
         return $1 if $desc =~ /^#(\d+): ITP: $package /;
     }
-    return 'nnnnnn';
+    return 0;
 }
 
 sub substitute_perl_dependency {
@@ -857,8 +857,11 @@ sub create_control {
 sub create_changelog {
 	my $fh = _file_w(shift);
 	my $bug = shift;
+	
+	my $closes = "(Closes: #$bug)" if $bug;
+
 	$fh->print("$srcname ($pkgversion) unstable; urgency=low\n");
-	$fh->print("\n  * Initial Release (Closes: #$bug).\n\n");
+	$fh->print("\n  * Initial Release.$closes\n\n");
 	$fh->print(" -- $maintainer  $date\n");
 	#$fh->print("Local variables:\nmode: debian-changelog\nEnd:\n");
 	$fh->close
