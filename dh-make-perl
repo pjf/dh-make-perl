@@ -756,10 +756,9 @@ sub get_itp {
     my @links = $mech->links();
     
     foreach my $link (@links) {
-        my $href = $link->url();
         my $desc = $link->text();
-        
-        return $1 if $desc =~ /^#(\d{6}): ITP: $package /;
+
+        return $1 if $desc =~ /^#(\d+): ITP: $package /;
     }
     return 'nnnnnn';
 }
