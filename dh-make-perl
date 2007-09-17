@@ -1130,8 +1130,7 @@ Specifies the version of the resulting package.
 
 Manually specify the ITP bug number that this package closes. If not 
 given, dh-make-perl will try to connect to bugs.debian.org to fetch the 
-appropriate bug number, using WWW::Mechanize. If no bug is filed, then 
-on debian/changelog won't be added other than "* Initial release.".
+appropriate bug number, using WWW::Mechanize.
 
 =item B<--depends> I<DEPENDS>
 
