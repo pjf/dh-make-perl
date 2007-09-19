@@ -1,3 +1,9 @@
+dh-make-perl (0.33) UNRELEASED; urgency=low
+
+  * Added --email|-e and --packagename|-p switches (Closes: #443170).
+
+ -- David Paleino <d.paleino@gmail.com>  Wed, 19 Sep 2007 19:17:48 +0200
+
 dh-make-perl (0.32) unstable; urgency=low
 
   [ Frank Lichtenheld ]

@@ -86,7 +86,7 @@ sub interior_sequence {
 package main;
 my (@stdmodules, $perl_pkg, $debstdversion, $priority, $section, $depends, 
     $bdepends, $bdependsi, $maintainer, $arch, $closes, $date, $debiandir,
-    $startdir, $dh_compat, $datadir, $homedir);
+    $startdir, $dh_compat, $datadir, $homedir, $email);
 our %overrides;
 
 $perl_pkg = get_perl_pkg_details();
@@ -97,7 +97,6 @@ $section = 'perl';
 $depends = '${perl:Depends}';
 $bdependsi = "perl (>= $perl_pkg->{Version})";
 $bdepends = 'debhelper (>= 5.0.0)';
-$maintainer = get_maintainer();
 $arch = 'all';
 $date = `date -R`;
 $startdir = getcwd();
@@ -128,7 +127,8 @@ GetOptions(\%opts,
 	   'build!', 'core-ok', 'cpan=s', 'cpanplus=s', 'closes=i', 
 	   'cpan-mirror=s', 'dbflags=s', 'depends=s', 'desc=s',
 	   'exclude|i:s{,}', 'help', 'install!', 'nometa', 'notest',
-	   'pkg-perl!', 'requiredeps', 'version=s') or die usage_instructions();
+	   'pkg-perl!', 'requiredeps', 'version=s', 'e=s', 'email=s',
+	   'p=s', 'packagename=s') or die usage_instructions();
 
 @stdmodules = get_stdmodules();
 
@@ -143,10 +143,25 @@ load_overrides();
 my $tarball = setup_dir();
 $meta = process_meta("$maindir/META.yml") if (-f "$maindir/META.yml");
 findbin_fix();
+
+if (defined $opts{e}) {
+  $email = $opts{e};
+} elsif (defined $opts{email}) {
+  $email = $opts{email};
+} else {
+  $email = '';
+}
+$maintainer = get_maintainer($email);
+
 if (defined $opts{desc}) {
   $desc = $opts{desc};
 }
 ($pkgname, $version) = extract_basic();
+if (defined $opts{p}) {
+  $pkgname = $opts{p};
+} elsif (defined $opts{packagename}) {
+  $pkgname = $opts{packagename};
+}
 unless (defined $opts{version}) {
 	$pkgversion = $version . "-1";
 } else {
@@ -213,7 +228,8 @@ Other options: [ --desc DESCRIPTION ] [ --arch all|any ] [ --version VERSION ]
                [ --bdependsi BUILD-DEPENDS-INDEP ] [ --cpan-mirror MIRROR ]
                [ --exclude|-i [REGEX] ] [ --notest ] [ --nometa ] 
                [ --requiredeps ] [ --core-ok ] [ --basepkgs PKGSLIST ]
-               [ --closes ITPBUG ]
+               [ --closes ITPBUG ] [ --packagename|-p PACKAGENAME ]
+               [ --email|-e EMAIL ]
 USAGE
 }
 
@@ -974,7 +990,7 @@ $upsurl .*/$perlname-$version_re\$
 }
 
 sub get_maintainer {
-        my ($user, $pwnam, $email, $name, $mailh);
+    my ($user, $pwnam, $email, $name, $mailh);
 	$user = $ENV{LOGNAME} || $ENV{USER};
 	$pwnam = getpwuid($<);
 	die "Cannot determine current user\n" unless $pwnam;
@@ -986,7 +1002,7 @@ sub get_maintainer {
 	}
 	$user ||= $pwnam->name;
 	$name ||= $user;
-	$email = $ENV{DEBEMAIL} || $ENV{EMAIL};
+	$email = shift @_ || ($ENV{DEBEMAIL} || $ENV{EMAIL});
 	unless ($email) {
 		chomp($mailh = `cat /etc/mailname`);
 		$email = $user.'@'.$mailh;
@@ -1125,6 +1141,16 @@ decide this alone.
 =item B<--version> I<VERSION>
 
 Specifies the version of the resulting package.
+
+=item B<--email> | B<-e> I<EMAIL>
+
+Manually specify the Maintainer email address to use in debian/control and
+in debian/changelog.
+
+=item B<--packagename> | B<-p> I<PACKAGENAME>
+
+Manually specify the Package Name, useful when the module has dashes in its
+name.
 
 =item B<--closes> I<ITPBUG>
 
