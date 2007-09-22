@@ -856,6 +856,7 @@ sub create_control {
             $fh->print("Maintainer: $maintainer\n");
         }
 	$fh->print("Standards-Version: $debstdversion\n");
+	$fh->print("Homepage: $upsurl\n") if $upsurl;
         do {
             $fh->print("XS-Vcs-Svn: svn://svn.debian.org/pkg-perl/trunk/$srcname/\n");
             $fh->print("XS-Vcs-Browser: http://svn.debian.org/wsvn/pkg-perl/trunk/$srcname/\n");
@@ -866,7 +867,6 @@ sub create_control {
 	$fh->print("Depends: $depends\n") if $depends;
 	$fh->print($extrapfields) if defined $extrapfields;
 	$fh->print("Description: $desc\n$longdesc\n .\n This description was automagically extracted from the module by dh-make-perl.\n");
-	$fh->print(" .\n  Homepage: $upsurl\n") if $upsurl;
 	$fh->close;
 }
 
