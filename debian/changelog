@@ -6,8 +6,9 @@ dh-make-perl (0.33) UNRELEASED; urgency=low
   [ gregor herrmann ]
   * Create Homepage: field in source stanza instead of pseudo-field in long
     description.
+  * Add "--pkg-perl" to output of usage instructions.
 
- -- gregor herrmann <gregor+debian@comodo.priv.at>  Sun, 23 Sep 2007 00:30:23 +0200
+ -- gregor herrmann <gregor+debian@comodo.priv.at>  Wed, 26 Sep 2007 17:59:22 +0200
 
 dh-make-perl (0.32) unstable; urgency=low
 

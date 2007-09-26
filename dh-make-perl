@@ -229,7 +229,7 @@ Other options: [ --desc DESCRIPTION ] [ --arch all|any ] [ --version VERSION ]
                [ --exclude|-i [REGEX] ] [ --notest ] [ --nometa ] 
                [ --requiredeps ] [ --core-ok ] [ --basepkgs PKGSLIST ]
                [ --closes ITPBUG ] [ --packagename|-p PACKAGENAME ]
-               [ --email|-e EMAIL ]
+               [ --email|-e EMAIL ] [ --pkg-perl ]
 USAGE
 }
 
