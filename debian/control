@@ -9,8 +9,8 @@ Uploaders: Gunnar Wolf <gwolf@debian.org>, Wolfgang Schemmel <debian@37.org>,
  Damyan Ivanov <dmn@debian.org>, gregor herrmann <gregor+debian@comodo.priv.at>,
  David Paleino <d.paleino@gmail.com>
 Standards-Version: 3.7.2
-XS-Vcs-Svn: svn://svn.debian.org/pkg-perl/trunk/dh-make-perl/
-XS-Vcs-Browser: http://svn.debian.org/wsvn/pkg-perl/trunk/dh-make-perl/
+Vcs-Svn: svn://svn.debian.org/pkg-perl/trunk/dh-make-perl/
+Vcs-Browser: http://svn.debian.org/wsvn/pkg-perl/trunk/dh-make-perl/
 
 Package: dh-make-perl
 Architecture: all

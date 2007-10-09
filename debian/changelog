@@ -7,8 +7,10 @@ dh-make-perl (0.33) UNRELEASED; urgency=low
   * Create Homepage: field in source stanza instead of pseudo-field in long
     description.
   * Add "--pkg-perl" to output of usage instructions.
+  * debian/control: Added: Vcs-Svn field (source stanza); Vcs-Browser
+    field (source stanza). Removed: XS-Vcs-Svn fields.
 
- -- gregor herrmann <gregor+debian@comodo.priv.at>  Wed, 26 Sep 2007 17:59:22 +0200
+ -- gregor herrmann <gregor+debian@comodo.priv.at>  Tue, 09 Oct 2007 22:27:10 +0200
 
 dh-make-perl (0.32) unstable; urgency=low
 
