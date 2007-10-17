@@ -1,3 +1,10 @@
+dh-make-perl (0.34) UNRELEASED; urgency=low
+
+  * Add Vcs-* fields instead of the obsolete XS-Vcs-* fields when invoked
+    with --pkg-perl.
+
+ -- gregor herrmann <gregor+debian@comodo.priv.at>  Wed, 17 Oct 2007 17:51:46 +0200
+
 dh-make-perl (0.33) unstable; urgency=low
 
   [ David Paleino ]

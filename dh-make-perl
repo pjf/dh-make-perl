@@ -858,8 +858,8 @@ sub create_control {
 	$fh->print("Standards-Version: $debstdversion\n");
 	$fh->print("Homepage: $upsurl\n") if $upsurl;
         do {
-            $fh->print("XS-Vcs-Svn: svn://svn.debian.org/pkg-perl/trunk/$srcname/\n");
-            $fh->print("XS-Vcs-Browser: http://svn.debian.org/wsvn/pkg-perl/trunk/$srcname/\n");
+            $fh->print("Vcs-Svn: svn://svn.debian.org/pkg-perl/trunk/$srcname/\n");
+            $fh->print("Vcs-Browser: http://svn.debian.org/wsvn/pkg-perl/trunk/$srcname/\n");
         } if $opts{'pkg-perl'};
 	$fh->print("\n");
 	$fh->print("Package: $pkgname\n");
