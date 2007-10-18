@@ -1,4 +1,4 @@
-dh-make-perl (0.34) UNRELEASED; urgency=low
+dh-make-perl (0.34) unstable; urgency=low
 
   * Add Vcs-* fields instead of the obsolete XS-Vcs-* fields when invoked
     with --pkg-perl.
