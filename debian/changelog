@@ -1,3 +1,10 @@
+dh-make-perl (0.35) UNRELEASED; urgency=low
+
+  * Try Module::Depends if M::D::Intrusive fails (Closes: #447520). This
+    helps Module::Install modules (with META.yml) to work with dh-make-perl.
+
+ -- Oliver Gorwits <oliver.gorwits@oucs.ox.ac.uk>  Mon, 22 Oct 2007 10:42:59 +0100
+
 dh-make-perl (0.34) unstable; urgency=low
 
   * Add Vcs-* fields instead of the obsolete XS-Vcs-* fields when invoked

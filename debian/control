@@ -7,7 +7,8 @@ Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
 Uploaders: Gunnar Wolf <gwolf@debian.org>, Wolfgang Schemmel <debian@37.org>,
  Christopher Sacca <csacca@thecsl.org>,
  Damyan Ivanov <dmn@debian.org>, gregor herrmann <gregor+debian@comodo.priv.at>,
- David Paleino <d.paleino@gmail.com>
+ David Paleino <d.paleino@gmail.com>,
+ Oliver Gorwits <oliver.gorwits@oucs.ox.ac.uk>
 Standards-Version: 3.7.2
 Vcs-Svn: svn://svn.debian.org/pkg-perl/trunk/dh-make-perl/
 Vcs-Browser: http://svn.debian.org/wsvn/pkg-perl/trunk/dh-make-perl/

@@ -634,47 +634,65 @@ sub extract_docs {
 	}, $dir);
 }
 
+sub run_depends {
+    my ($depends_module, $dir) = @_;
+
+    no warnings;
+    local *STDERR;
+    open(STDERR, ">/dev/null");
+    my $mod_dep = $depends_module->new();
+
+    $mod_dep->dist_dir( $dir );
+    $mod_dep->find_modules();
+
+    my %dep_hash = %{$mod_dep->requires};
+
+    my $error = $mod_dep->error();
+    die "Error: $error\n" if $error;
+    return %dep_hash;
+}
+
 sub extract_depends {
-	my ($dir, $meta, %dep_hash, $error, @uses, @deps, @not_debs,
-	    $has_apt_file);
-	$dir = shift;
-	$meta = shift;
-	local @INC = ($dir, @INC);
+    my $dir = shift;
+    my $meta = shift;
+    my (%dep_hash, @uses, @deps, @not_debs, $has_apt_file);
+    local @INC = ($dir, @INC);
 
-	$dir .= '/' unless $dir =~ m/\/$/;
+    $dir .= '/' unless $dir =~ m/\/$/;
 
-	### Mental note to self: It'd be worth it to fall back to 
-	### Module:::Depends and _only_ then fail
-	eval {
-	    my $mod_dep;
-	    no warnings;
-	    local *STDERR;
-	    open(STDERR, ">/dev/null");
-	    $mod_dep = Module::Depends::Intrusive->new();
-	
-	    $mod_dep->dist_dir( $dir );
-	    $mod_dep->find_modules();
+    # try Module::Depends::Intrusive, but if that fails then
+    # fall back to Module::Depends.
 
-	    %dep_hash = %{$mod_dep->requires};
+    eval {
+        %dep_hash = run_depends('Module::Depends::Intrusive',$dir);
+    };
+    if ($@) {
+        warn '='x70,"\n";
+        warn "First attempt (Module::Depends::Intrusive) at a dependency\n" .
+        "check failed. Possible use of Module::Install ?\n" .
+        "Trying again with Module::Depends ... \n";
+        warn '='x70,"\n";
 
-	    $error = $mod_dep->error();
-	    die "Error: $error\n" if $error;
-	};
-	if ($@ or $error) {
-	    warn '='x70,"\n";
-	    warn "Could not find the dependencies for the requested module\n";
+        eval {
+            %dep_hash = run_depends('Module::Depends',$dir);
+        };
 
-	    warn "Module::Depends::Intrusive reports: $error\n" if $error;
-	    warn "Generated error: $@" if $@;
+        if ($@) {
+            warn '='x70,"\n";
+            warn "Could not find the dependencies for the requested module.\n";
+            warn "Generated error: $@";
 
-	    warn "Please check if your module depends on Module::Install\n" .
-		"for its build process - Automatically finding its\n" .
-		"dependencies is unsupported, please specify them manually\n" .
-		"using the 'depends' option. \n";
-	    warn '='x70,"\n";
+            warn "Please check if your module depends on Module::Install\n" .
+            "for its build process - Automatically finding its\n" .
+            "dependencies is unsupported, please specify them manually\n" .
+            "using the 'depends' option. \n";
+            warn "Alternatively, including a META.yml file with dependencies\n" .
+            "should allow discovery even for Module::Install modules. \n";
+            warn '='x70,"\n";
 
-	    exit 1;
-	}
+            exit 1;
+        }
+    }
 
 	foreach my $module (keys( %dep_hash )) {
 		next if (grep ( /^$module$/, @stdmodules));
@@ -1365,6 +1383,7 @@ Patches from:
   Marc Chantreux (mail withheld)
   Matt Hope E<lt>dopey@debian.orgE<gt>
   Noel Maddy E<lt>noel@zhtwn.comE<gt>
+  Oliver Gorwits E<lt>oliver.gorwits@oucs.ox.ac.ukE<gt>
   Peter Moerch E<lt>mn3k66i02@sneakemail.comE<gt>
   Stephen Oberholtzer E<lt>oliverklozoff@gmail.comE<gt>
   Ton Nijkes E<lt>tonn@wau.mis.ah.nlE<gt>
