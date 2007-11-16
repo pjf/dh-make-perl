@@ -1,3 +1,17 @@
+dh-make-perl (0.36) UNRELEASED; urgency=low
+
+  * Fix install dependencies in rules templates
+    Before:
+      install: build install-stamp
+      install-stamp:
+    After:
+      install: install-stamp
+      install-stamp: build-stamp
+    Avoids problems with parallel builds
+  * Use "$@" as when touching stamps
+
+ -- Damyan Ivanov <dmn@debian.org>  Fri, 16 Nov 2007 10:12:08 +0200
+
 dh-make-perl (0.35) unstable; urgency=low
 
   [ Oliver Gorwits ]

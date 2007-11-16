@@ -37,7 +37,7 @@ build-stamp:
 	OPTIMIZE="$(CFLAGS)" $(PERL) Build
 	#TEST#
 
-	touch build-stamp
+	touch $@
 
 clean:
 	dh_testdir
@@ -48,8 +48,8 @@ clean:
 	# Add commands to clean up after the build process here
 	[ ! -f Build ] || $(PERL) Build distclean
 
-install: build install-stamp
-install-stamp:
+install: install-stamp
+install-stamp: build-stamp
 	dh_testdir
 	dh_testroot
 	dh_clean -k
@@ -57,7 +57,7 @@ install-stamp:
 	# Add commands to install the package into debian/$PACKAGE_NAME here
 	$(PERL) Build install destdir=$(TMP) create_packlist=0
 
-	touch install-stamp
+	touch $@
 
 # Build architecture-independent files here.
 binary-indep: build install

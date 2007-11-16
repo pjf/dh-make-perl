@@ -46,8 +46,8 @@ clean:
 	# Add commands to clean up after the build process here
 	[ ! -f Makefile ] || $(MAKE) realclean
 
-install: build install-stamp
-install-stamp:
+install: install-stamp
+install-stamp: build-stamp
 	dh_testdir
 	dh_testroot
 	dh_clean -k
