@@ -9,7 +9,7 @@ Uploaders: Gunnar Wolf <gwolf@debian.org>, Wolfgang Schemmel <debian@37.org>,
  Damyan Ivanov <dmn@debian.org>, gregor herrmann <gregor+debian@comodo.priv.at>,
  David Paleino <d.paleino@gmail.com>,
  Oliver Gorwits <oliver.gorwits@oucs.ox.ac.uk>
-Standards-Version: 3.7.2
+Standards-Version: 3.7.3
 Vcs-Svn: svn://svn.debian.org/pkg-perl/trunk/dh-make-perl/
 Vcs-Browser: http://svn.debian.org/wsvn/pkg-perl/trunk/dh-make-perl/
 
