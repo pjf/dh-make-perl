@@ -728,7 +728,7 @@ sub extract_depends {
 		    my ($p, $f) = split / /, $_;
 		    chop($p); #Get rid of the ":"
 		    if ($f =~ /$re/ && ! 
-			grep { $_ eq $p } @deps, split(/,/,$opts{basepkgs})) {
+			grep { $_ eq $p } @deps, split(/,/,@stdmodules)) {
 			if (exists $dep_hash{$mod}) {
 			    push @deps, {name=>$p, 
 					 version=>$dep_hash{$mod}};

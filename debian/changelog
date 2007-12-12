@@ -1,3 +1,10 @@
+dh-make-perl (0.37) unstable; urgency=low
+
+  * Replace erroneous reference to $opts{basepkgs} in extract_depends, thanks
+    to Hilko Bengen for the correction. (Closes: #452122).
+
+ -- Martín Ferrari <martin.ferrari@gmail.com>  Wed, 12 Dec 2007 09:50:22 -0300
+
 dh-make-perl (0.36) unstable; urgency=low
 
   * Fix install dependencies in rules templates
