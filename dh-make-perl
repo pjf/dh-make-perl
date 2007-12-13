@@ -91,7 +91,7 @@ our %overrides;
 
 $perl_pkg = get_perl_pkg_details();
 
-$debstdversion = '3.7.2';
+$debstdversion = '3.7.3';
 $priority = 'optional';
 $section = 'perl';
 $depends = '${perl:Depends}';

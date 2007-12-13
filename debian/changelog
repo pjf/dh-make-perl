@@ -1,12 +1,17 @@
 dh-make-perl (0.37) unstable; urgency=low
 
+  [ Martín Ferrari ]
   * Replace erroneous reference to $opts{basepkgs} in extract_depends, thanks
     to Hilko Bengen for the correction. (Closes: #452122).
   * Obtain a list of matching modules when querying CPAN (instead of just the
     first match) to allow it to correctly choose between module names that
     only differ in case. (Closes: #451838).
 
- -- Martín Ferrari <martin.ferrari@gmail.com>  Thu, 13 Dec 2007 00:48:13 -0300
+  [ Gunnar Wolf ]
+  * Now generates packages with standards-version: 3.7.3
+    (i.e. meta-bumped-up standards-version)
+
+ -- Gunnar Wolf <gwolf@debian.org>  Thu, 13 Dec 2007 17:29:38 -0600
 
 dh-make-perl (0.36) unstable; urgency=low
 
