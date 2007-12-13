@@ -286,8 +286,28 @@ sub setup_dir {
 		$CPAN::Config->{'histfile'}  = $ENV{'HOME'} . "/.cpan/history";
 		$CPAN::Config->{'keep_source_where'} = $ENV{'HOME'} . "/.cpan/source";
                 
-		$mod = CPAN::Shell->expand('Module', '/^'.$opts{cpan}.'$/') 
-			|| die "Can't find '$opts{cpan}' module on CPAN\n";
+		# This modification allows to retrieve all the modules that
+		# match the user-provided string. 
+		#
+		# expand() returns a list of matching items when called in list
+		# context, so after retrieving it, I try to match exactly what
+		# the user asked for. Specially important when there are
+		# different modules which only differ in case.
+		#
+		# This Closes: #451838
+		my @mod = CPAN::Shell->expand('Module', '/^'.$opts{cpan}.'$/') 
+			or die "Can't find '$opts{cpan}' module on CPAN\n";
+		foreach(@mod) {
+			my $file = $_->cpan_file();
+			$file =~ s#.*/##; # remove directory
+			$file =~ s/(.*)-.*/$1/; # remove version and extension
+			$file =~ s/-/::/g; # convert dashes to colons
+			if($file eq $opts{cpan}) {
+				$mod = $_;
+				last;
+			}
+		}
+		$mod = shift @mod unless($mod);
 		$mod_cpan_version = $mod->cpan_version;
 		$cpanversion = $CPAN::VERSION;
 		$cpanversion =~ s/_.*//;
