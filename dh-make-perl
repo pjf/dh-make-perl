@@ -1017,7 +1017,7 @@ It was created by $maintainer using dh-make-perl.
 sub create_watch {
 	my $fh = _file_w(shift);
 
-	my $version_re = '([\.\d]+)\.(?:tar\.gz|tar|tgz)';
+	my $version_re = 'v?(\d[\d_.]+)\.(?:tar(?:\.gz|\.bz2)?|tgz|zip|rar)';
 
 	$fh->print(
 "\# format version number, currently 3; this line is compulsory!

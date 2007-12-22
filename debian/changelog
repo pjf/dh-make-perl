@@ -11,6 +11,10 @@ dh-make-perl (0.37) unstable; urgency=low
   * Now generates packages with standards-version: 3.7.3
     (i.e. meta-bumped-up standards-version)
 
+  [ gregor herrmann ]
+  * Extend regex for matching upstream versions on the creation of
+    debian/watch.
+
  -- Gunnar Wolf <gwolf@debian.org>  Thu, 13 Dec 2007 17:29:38 -0600
 
 dh-make-perl (0.36) unstable; urgency=low
