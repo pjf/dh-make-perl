@@ -15,7 +15,7 @@ dh-make-perl (0.37) unstable; urgency=low
   * Extend regex for matching upstream versions on the creation of
     debian/watch.
 
- -- Gunnar Wolf <gwolf@debian.org>  Thu, 13 Dec 2007 17:29:38 -0600
+ -- Damyan Ivanov <dmn@debian.org>  Fri, 28 Dec 2007 15:16:51 +0200
 
 dh-make-perl (0.36) unstable; urgency=low
 
