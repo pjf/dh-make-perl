@@ -1230,7 +1230,7 @@ the field should not appear in debian/rules (if you really mean it, of course
 Useful when preparing a package for the Debian Perl Group
 L<http://pkg-perl.alioth.debian.org>.
 
-Sets C<Maintainer>, C<Uploaders>, C<XS-Vcs-Svn> and C<XS-Vcs-Browser> fields in
+Sets C<Maintainer>, C<Uploaders>, C<Vcs-Svn> and C<Vcs-Browser> fields in
 debian/control accordingly.
 
 =item B<--cpan-mirror> I<MIRROR>

@@ -1,3 +1,9 @@
+dh-make-perl (0.38) UNRELEASED; urgency=low
+
+  * Fix inline documentation: it's Vcs-Svn and Vcs-Browser nowadays.
+
+ -- Damyan Ivanov <dmn@debian.org>  Thu, 03 Jan 2008 03:30:54 +0100
+
 dh-make-perl (0.37) unstable; urgency=low
 
   [ Martín Ferrari ]
