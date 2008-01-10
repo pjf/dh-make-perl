@@ -1,3 +1,10 @@
+dh-make-perl (0.39) UNRELEASED; urgency=low
+
+  * Set debhelper compatibility level to 6 (for dh-make-perl and the
+    packages it creates).
+
+ -- gregor herrmann <gregor+debian@comodo.priv.at>  Thu, 10 Jan 2008 19:38:07 +0100
+
 dh-make-perl (0.38) unstable; urgency=low
 
   [ gregor herrmann ]

@@ -96,11 +96,11 @@ $priority = 'optional';
 $section = 'perl';
 $depends = '${perl:Depends}';
 $bdependsi = "perl (>= $perl_pkg->{Version})";
-$bdepends = 'debhelper (>= 5.0.0)';
+$bdepends = 'debhelper (>= 6.0.0)';
 $arch = 'all';
 $date = `date -R`;
 $startdir = getcwd();
-$dh_compat = 5;
+$dh_compat = 6;
 $datadir = '/usr/share/dh-make-perl';
 $homedir = "$ENV{HOME}/.dh-make-perl";
 
