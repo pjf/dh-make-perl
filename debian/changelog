@@ -2,8 +2,10 @@ dh-make-perl (0.39) UNRELEASED; urgency=low
 
   * Set debhelper compatibility level to 6 (for dh-make-perl and the
     packages it creates).
+  * Add comment and additional spaces to the created watch files to make the
+    pattern easier to read and understand.
 
- -- gregor herrmann <gregor+debian@comodo.priv.at>  Thu, 10 Jan 2008 19:38:07 +0100
+ -- gregor herrmann <gregor+debian@comodo.priv.at>  Thu, 10 Jan 2008 19:42:49 +0100
 
 dh-make-perl (0.38) unstable; urgency=low
 
