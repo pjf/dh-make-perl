@@ -1,4 +1,4 @@
-dh-make-perl (0.38) UNRELEASED; urgency=low
+dh-make-perl (0.38) unstable; urgency=low
 
   [ gregor herrmann ]
   * Fix inline documentation: it's Vcs-Svn and Vcs-Browser nowadays.
@@ -9,7 +9,7 @@ dh-make-perl (0.38) UNRELEASED; urgency=low
     configuring. Instead, verbosely remove the empty dirs if they exist. Perl
     5.10's MakeMaker is reported to be fixed.
 
- -- gregor herrmann <gregor+debian@comodo.priv.at>  Thu, 03 Jan 2008 03:30:54 +0100
+ -- Damyan Ivanov <dmn@debian.org>  Thu, 10 Jan 2008 17:00:03 +0200
 
 dh-make-perl (0.37) unstable; urgency=low
 
