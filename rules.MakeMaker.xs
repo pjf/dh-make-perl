@@ -19,7 +19,7 @@ endif
 
 TMP     =$(CURDIR)/debian/$(PACKAGE)
 
-# Allow disabling build optimation by setting noopt in
+# Allow disabling build optimisation by setting noopt in
 # $DEB_BUILD_OPTIONS
 CFLAGS = -Wall -g
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
