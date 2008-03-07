@@ -3,8 +3,7 @@ dh-make-perl (0.39) UNRELEASED; urgency=low
   TODO: please review the new functionality (dh_installexamples)
   
   [ gregor herrmann ]
-  * dh-make-perl: set debhelper compatibility level of the created package
-    to 6
+  * Set debhelper compatibility level of the created package to 6.
   * Add comment and additional spaces to the created watch files to make the
     pattern easier to read and understand.
   * Fix small error in output of create_copyright().
