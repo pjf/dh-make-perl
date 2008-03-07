@@ -96,7 +96,7 @@ $priority = 'optional';
 $section = 'perl';
 $depends = '${perl:Depends}';
 $bdependsi = "perl (>= $perl_pkg->{Version})";
-$bdepends = 'debhelper (>= 6.0.0)';
+$bdepends = 'debhelper (>= 6)';
 $arch = 'all';
 $date = `date -R`;
 $startdir = getcwd();
