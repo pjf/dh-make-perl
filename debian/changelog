@@ -7,7 +7,7 @@ dh-make-perl (0.39) UNRELEASED; urgency=low
   * Add comment and additional spaces to the created watch files to make the
     pattern easier to read and understand.
   * Fix small error in output of create_copyright().
-  * Automatically find examples/samples/sample directories for
+  * Automatically find examples/eg/samples/sample directories for
     dh_installexamples; otherwise remove empty dh_installexamples line from
     debian/rules.
 
