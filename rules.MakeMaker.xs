@@ -69,7 +69,7 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_installexamples 
+	dh_installexamples
 	dh_installdocs #DOCS#
 	dh_installchangelogs #CHANGES#
 	dh_shlibdeps
@@ -86,4 +86,4 @@ source diff:
 	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary
+.PHONY: build clean binary-indep binary-arch binary install
