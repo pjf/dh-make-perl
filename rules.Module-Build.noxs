@@ -60,7 +60,7 @@ binary-indep: build install
 	dh_testdir
 	dh_testroot
 	dh_installdocs #DOCS#
-	dh_installexamples
+	dh_installexamples #EXAMPLES#
 	dh_installchangelogs #CHANGES#
 	dh_perl
 	dh_compress

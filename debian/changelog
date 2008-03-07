@@ -5,11 +5,15 @@ dh-make-perl (0.39) unstable; urgency=low
     to 6
   * Add comment and additional spaces to the created watch files to make the
     pattern easier to read and understand.
+  * Fix small error in output of create_copyright().
+  * Automatically find examples/samples/sample directories for
+    dh_installexamples; otherwise remove empty dh_installexamples line from
+    debian/rules.
 
   [ Damyan Ivanov ]
   * rules.* templates: add "install" to phony targets list
 
- -- Damyan Ivanov <dmn@debian.org>  Fri, 07 Mar 2008 09:49:38 +0200
+ -- gregor herrmann <gregor+debian@comodo.priv.at>  Fri, 07 Mar 2008 22:47:31 +0100
 
 dh-make-perl (0.38) unstable; urgency=low
 

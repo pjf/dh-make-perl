@@ -68,7 +68,7 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installdocs #DOCS#
-	dh_installexamples
+	dh_installexamples #EXAMPLES#
 	dh_installchangelogs #CHANGES#
 	dh_shlibdeps
 	dh_strip
