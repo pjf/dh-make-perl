@@ -1397,32 +1397,59 @@ by the Debian pkg-perl team, http://alioth.debian.org/projects/pkg-perl
 
 Patches from:
 
-  Adam Sjoegren E<lt>asjo@koldfront.dkE<gt>
-  Adrian Phillips E<lt>adrianp@powertech.noE<gt>
-  Amos Shapira E<lt>amos.shapira@gmail.comE<gt>
-  Christian Kurz E<lt>shorty@debian.orgE<gt>
-  Damyan Ivanov E<lt>divanov@creditreform.bgE<gt>
-  David Paleino E<lt>d.paleino@gmail.comE<gt>
-  David Pashley E<lt>david@davidpashley.comE<gt>
-  Edward Betts E<lt>edward@debian.orgE<gt>
-  Fermin Galan E<lt>galan@dit.upm.esE<gt>
-  Geoff Richards E<lt>qef@ungwe.orgE<gt>
-  Gergely Nagy E<lt>algernon@bonehunter.rulez.orgE<gt>
-  gregor herrmann E<lt>gregor+debian@comodo.priv.atE<gt>
-  Hilko Bengen E<lt>bengen@debian.orgE<gt>
-  Kees Cook E<lt>keex@outflux.netE<gt>
-  Jesper Krogh E<lt>jesper@krogh.ccE<gt>
-  Johnny Morano E<lt>jmorano@moretrix.comE<gt>
-  Juerd E<lt>juerd@ouranos.juerd.netE<gt>
-  Marc Chantreux (mail withheld)
-  Matt Hope E<lt>dopey@debian.orgE<gt>
-  Noel Maddy E<lt>noel@zhtwn.comE<gt>
-  Oliver Gorwits E<lt>oliver.gorwits@oucs.ox.ac.ukE<gt>
-  Peter Moerch E<lt>mn3k66i02@sneakemail.comE<gt>
-  Stephen Oberholtzer E<lt>oliverklozoff@gmail.comE<gt>
-  Ton Nijkes E<lt>tonn@wau.mis.ah.nlE<gt>
+=over
 
-  ...And others who, sadly, we have forgot to add :-/
+=item Adam Sjoegren E<lt>asjo@koldfront.dkE<gt>
+
+=item Adrian Phillips E<lt>adrianp@powertech.noE<gt>
+
+=item Amos Shapira E<lt>amos.shapira@gmail.comE<gt>
+
+=item Christian Kurz E<lt>shorty@debian.orgE<gt>
+
+=item Damyan Ivanov E<lt>divanov@creditreform.bgE<gt>
+
+=item David Paleino E<lt>d.paleino@gmail.comE<gt>
+
+=item David Pashley E<lt>david@davidpashley.comE<gt>
+
+=item Edward Betts E<lt>edward@debian.orgE<gt>
+
+=item Fermin Galan E<lt>galan@dit.upm.esE<gt>
+
+=item Geoff Richards E<lt>qef@ungwe.orgE<gt>
+
+=item Gergely Nagy E<lt>algernon@bonehunter.rulez.orgE<gt>
+
+=item gregor herrmann E<lt>gregor+debian@comodo.priv.atE<gt>
+
+=item Hilko Bengen E<lt>bengen@debian.orgE<gt>
+
+=item Kees Cook E<lt>keex@outflux.netE<gt>
+
+=item Jesper Krogh E<lt>jesper@krogh.ccE<gt>
+
+=item Johnny Morano E<lt>jmorano@moretrix.comE<gt>
+
+=item Juerd E<lt>juerd@ouranos.juerd.netE<gt>
+
+=item Marc Chantreux (mail withheld)
+
+=item Matt Hope E<lt>dopey@debian.orgE<gt>
+
+=item Noel Maddy E<lt>noel@zhtwn.comE<gt>
+
+=item Oliver Gorwits E<lt>oliver.gorwits@oucs.ox.ac.ukE<gt>
+
+=item Peter Moerch E<lt>mn3k66i02@sneakemail.comE<gt>
+
+=item Stephen Oberholtzer E<lt>oliverklozoff@gmail.comE<gt>
+
+=item Ton Nijkes E<lt>tonn@wau.mis.ah.nlE<gt>
+
+=back
+
+... And others who, sadly, we have forgot to add :-/
 
 =cut
 

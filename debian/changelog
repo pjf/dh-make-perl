@@ -10,11 +10,14 @@ dh-make-perl (0.39) UNRELEASED; urgency=low
   * Automatically find examples/eg/samples/sample directories for
     dh_installexamples; otherwise remove empty dh_installexamples line from
     debian/rules.
+  * Format the contributors' section in the POD with over/item/back, in the
+    verbatim paragraph the formatting codes were not rendered; thanks to
+    Nacho Barrientos Arias for spotting.
 
   [ Damyan Ivanov ]
   * rules.* templates: add "install" to phony targets list
 
- -- gregor herrmann <gregor+debian@comodo.priv.at>  Fri, 07 Mar 2008 22:47:31 +0100
+ -- gregor herrmann <gregor+debian@comodo.priv.at>  Sat, 08 Mar 2008 23:27:40 +0100
 
 dh-make-perl (0.38) unstable; urgency=low
 
