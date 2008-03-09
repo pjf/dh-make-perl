@@ -13,11 +13,13 @@ dh-make-perl (0.39) UNRELEASED; urgency=low
   * Format the contributors' section in the POD with over/item/back, in the
     verbatim paragraph the formatting codes were not rendered; thanks to
     Nacho Barrientos Arias for spotting.
+  * Don't add a trailing comma to Depends: if there are no extra
+    dependencies.
 
   [ Damyan Ivanov ]
   * rules.* templates: add "install" to phony targets list
 
- -- gregor herrmann <gregor+debian@comodo.priv.at>  Sat, 08 Mar 2008 23:27:40 +0100
+ -- gregor herrmann <gregor+debian@comodo.priv.at>  Sun, 09 Mar 2008 22:00:23 +0100
 
 dh-make-perl (0.38) unstable; urgency=low
 
