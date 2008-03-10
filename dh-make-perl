@@ -199,7 +199,7 @@ print "Package does not provide a long description - " ,
 print "Using maintainer: $maintainer\n";
 print "Found changelog: $changelog\n" if defined $changelog;
 print "Found docs: @docs\n";
-print "Found examples: @examples\n";
+print "Found examples: @examples\n" if @examples;
 -d $debiandir && die "The directory $debiandir is already present and I won't overwrite it: remove it yourself.\n";
 # start writing out the data
 mkdir ($debiandir, 0755) || die "Cannot create $debiandir dir: $!\n";
