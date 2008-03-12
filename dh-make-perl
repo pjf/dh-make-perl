@@ -762,8 +762,10 @@ sub extract_depends {
 		    if ($f =~ /$re/ && ! 
 			grep { $_ eq $p } @deps, split(/,/,@stdmodules)) {
 			if (exists $dep_hash{$mod}) {
+                            my $v = $dep_hash{$mod};
+                            $v =~ s/^v//;   # strip leading 'v' from version
 			    push @deps, {name=>$p, 
-					 version=>$dep_hash{$mod}};
+					 version=>$v};
 			} else {
 			    push @deps, {name => $p};
 			}
