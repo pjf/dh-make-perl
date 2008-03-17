@@ -21,7 +21,9 @@ dh-make-perl (0.39) UNRELEASED; urgency=low
   * dh-make-perl: when storing versioned dependencies, remove any leading 'v'
 
   [ Martín Ferrari ]
-  * Make source and diff .PHONY targets too.
+  * rules.* templates: Make source and diff .PHONY targets too, prettify a
+    little: remove unneeded whitespace, make PERL a conditional assignment
+    instead of an "#if" block, align the assignment of the variables.
 
  -- gregor herrmann <gregor+debian@comodo.priv.at>  Sun, 09 Mar 2008 22:00:23 +0100
 

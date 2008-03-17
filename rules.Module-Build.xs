@@ -11,13 +11,9 @@
 # always return the default without waiting for user input.
 export PERL_MM_USE_DEFAULT=1
 
-PACKAGE=$(shell dh_listpackages)
-
-ifndef PERL
-PERL = /usr/bin/perl
-endif
-
-TMP     =$(CURDIR)/debian/$(PACKAGE)
+PERL   ?= /usr/bin/perl
+PACKAGE = $(shell dh_listpackages)
+TMP     = $(CURDIR)/debian/$(PACKAGE)
 
 # Allow disabling build optimisation by setting noopt in
 # $DEB_BUILD_OPTIONS
@@ -31,20 +27,16 @@ endif
 build: build-stamp
 build-stamp:
 	dh_testdir
-
 	# Add commands to compile the package here
 	$(PERL) Build.PL installdirs=vendor
 	OPTIMIZE="$(CFLAGS)" $(PERL) Build
 	#TEST#
-
 	touch $@
 
 clean:
 	dh_testdir
 	dh_testroot
-
 	dh_clean build-stamp install-stamp
-
 	# Add commands to clean up after the build process here
 	[ ! -f Build ] || $(PERL) Build distclean
 
@@ -53,10 +45,8 @@ install-stamp: build-stamp
 	dh_testdir
 	dh_testroot
 	dh_clean -k
-
 	# Add commands to install the package into $(TMP) here
 	$(PERL) Build install destdir=$(TMP) create_packlist=0
-
 	touch $@
 
 # Build architecture-independent files here.
