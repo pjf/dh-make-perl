@@ -20,6 +20,9 @@ dh-make-perl (0.39) UNRELEASED; urgency=low
   * rules.* templates: add "install" to phony targets list
   * dh-make-perl: when storing versioned dependencies, remove any leading 'v'
 
+  [ Martín Ferrari ]
+  * Make source and diff .PHONY targets too.
+
  -- gregor herrmann <gregor+debian@comodo.priv.at>  Sun, 09 Mar 2008 22:00:23 +0100
 
 dh-make-perl (0.38) unstable; urgency=low
