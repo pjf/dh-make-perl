@@ -2,6 +2,7 @@ dh-make-perl (0.40) UNRELEASED; urgency=low
 
   * use debhelper compatibility level 5 (and respective build-dependency on
     debhelper) for generated packages
+  * all rules.* templates: drop obsolete 'source' and 'diff' targets
 
  -- Damyan Ivanov <dmn@debian.org>  Wed, 19 Mar 2008 09:44:05 +0200
 

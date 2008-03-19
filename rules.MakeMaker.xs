@@ -73,8 +73,5 @@ binary-arch: build install
 	dh_md5sums
 	dh_builddeb
 
-source diff:
-	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
-
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install source diff
+.PHONY: build clean binary-indep binary-arch binary install
