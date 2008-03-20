@@ -14,6 +14,12 @@ use strict;
 
 # TODO: 
 # * get more info from the package (maybe using CPAN methods)
+# * add --refresh
+#   should re-create debian/rules based on current dh-make-perl
+#   templates, after analyzing docs, examples etc.
+# * search.cpan.org-based watch file should be generated in the same
+#   cases as when the dist-based URL in d/copyright is used
+#   currently watch file is created only when --cpan is given
 
 ######################################################################
 # This Pod::Parser must be declared before the main program flow. If you
