@@ -4,6 +4,8 @@ dh-make-perl (0.41) UNRELEASED; urgency=low
     using the current templates. Useful when updating packages with ancient
     debian/rules.
   * remove trailing blank from usage text
+  * create debian/watch whenever upstream URL is available, not only if --cpan
+    is given
 
  -- Damyan Ivanov <dmn@debian.org>  Mon, 24 Mar 2008 16:24:29 +0200
 

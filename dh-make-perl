@@ -239,7 +239,7 @@ if (defined $opts{closes}) {
 create_changelog("$debiandir/changelog", $closes);
 create_rules("$debiandir/rules");
 create_compat("$debiandir/compat");
-create_watch("$debiandir/watch", $opts{cpan}) if ($opts{cpan});
+create_watch("$debiandir/watch") if $upsurl;
 #create_readme("$debiandir/README.Debian");
 create_copyright("$debiandir/copyright");
 fix_rules("$debiandir/rules", (defined $changelog ? $changelog : ''), \@docs, \@examples);
