@@ -1,3 +1,12 @@
+dh-make-perl (0.41) UNRELEASED; urgency=low
+
+  * new command line switch, --refresh, causing re-creation of debian/rules
+    using the current templates. Useful when updating packages with ancient
+    debian/rules.
+  * remove trailing blank from usage text
+
+ -- Damyan Ivanov <dmn@debian.org>  Mon, 24 Mar 2008 16:24:29 +0200
+
 dh-make-perl (0.40) unstable; urgency=low
 
   * use debhelper compatibility level 5 (and respective build-dependency on
