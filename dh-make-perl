@@ -119,6 +119,7 @@ my ($pkgname, $srcname,
     $pkgversion, 
     $desc, $longdesc, $copyright, $author, $upsurl);
 my ($extrasfields, $extrapfields);
+my ($module_build);
 my (@docs, @examples, $changelog, @args);
 
 my %opts;
@@ -134,7 +135,8 @@ GetOptions(\%opts,
 	   'cpan-mirror=s', 'dbflags=s', 'depends=s', 'desc=s',
 	   'exclude|i:s{,}', 'help', 'install!', 'nometa', 'notest',
 	   'pkg-perl!', 'requiredeps', 'version=s', 'e=s', 'email=s',
-	   'p=s', 'packagename=s') or die usage_instructions();
+	   'p=s', 'packagename=s', 'refresh!', 'R!',
+) or die usage_instructions();
 
 @stdmodules = get_stdmodules();
 
@@ -142,8 +144,30 @@ GetOptions(\%opts,
 die usage_instructions() if $opts{help};
 die "CPANPLUS support disabled, sorry" if $opts{cpanplus};
 
-$opts{exclude} = '(?:\/|^)(?:CVS|.svn)\/' if (defined $opts{exclude} && 
+$opts{exclude} = '(?:\/|^)(?:CVS|.svn)\/' if (!defined $opts{exclude} or
 					  $opts{exclude} eq '');
+
+if ( $opts{R} or $opts{refresh} )
+{
+    print "Engaging refresh mode\n";
+    $maindir='.';
+    $module_build = (-f "$maindir/Build.PL") ? "Module-Build" : "MakeMaker";
+    $debiandir='./debian';
+    extract_changelog($maindir);
+    extract_docs($maindir);
+    extract_examples($maindir);
+    print "Found changelog: $changelog\n" if defined $changelog;
+    print "Found docs: @docs\n";
+    print "Found examples: @examples\n" if @examples;
+    create_rules("$debiandir/rules");
+    fix_rules(
+        "$debiandir/rules",
+        (defined $changelog ? $changelog : ''),
+        \@docs, \@examples,
+    );
+    print "Done\n";
+    exit 0;
+}
 
 load_overrides();
 my $tarball = setup_dir();
@@ -174,7 +198,7 @@ unless (defined $opts{version}) {
 	$pkgversion = $opts{version};
 }
 move ($tarball, dirname($tarball) . "/${pkgname}_${version}.orig.tar.gz") if ($tarball && $tarball =~ /(?:\.tar\.gz|\.tgz)$/);
-my $module_build = (-f "$maindir/Build.PL") ? "Module-Build" : "MakeMaker";
+$module_build = (-f "$maindir/Build.PL") ? "Module-Build" : "MakeMaker";
 extract_changelog($maindir);
 extract_docs($maindir);
 extract_examples($maindir);
@@ -232,6 +256,7 @@ sub usage_instructions {
 return <<"USAGE"
 Usage:
 $0 [ --build ] [ --install ] [ SOURCE_DIR | --cpan MODULE ]
+$0 --refresh|-R
 Other options: [ --desc DESCRIPTION ] [ --arch all|any ] [ --version VERSION ]
                [ --depends DEPENDS ] [ --bdepends BUILD-DEPENDS ]
                [ --bdependsi BUILD-DEPENDS-INDEP ] [ --cpan-mirror MIRROR ]
@@ -659,7 +684,7 @@ sub extract_docs {
 	$dir .= '/' unless $dir =~ m(/$);
 	find(sub {
 		push (@docs, substr($File::Find::name, length($dir)))
-			if (/^(README|TODO|BUGS|NEWS|ANNOUNCE)/i && (! $opts{exclude} || ! $File::Find::name =~ /$opts{exclude}/)) ;
+			if (/^(README|TODO|BUGS|NEWS|ANNOUNCE)/i and (! $opts{exclude} or $File::Find::name !~ /$opts{exclude}/)) ;
 	}, $dir);
 }
 
