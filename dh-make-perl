@@ -135,7 +135,7 @@ GetOptions(\%opts,
 	   'cpan-mirror=s', 'dbflags=s', 'depends=s', 'desc=s',
 	   'exclude|i:s{,}', 'help', 'install!', 'nometa', 'notest',
 	   'pkg-perl!', 'requiredeps', 'version=s', 'e=s', 'email=s',
-	   'p=s', 'packagename=s', 'refresh!', 'R!',
+	   'p=s', 'packagename=s', 'refresh|R',
 ) or die usage_instructions();
 
 @stdmodules = get_stdmodules();
@@ -147,7 +147,7 @@ die "CPANPLUS support disabled, sorry" if $opts{cpanplus};
 $opts{exclude} = '(?:\/|^)(?:CVS|.svn)\/' if (!defined $opts{exclude} or
 					  $opts{exclude} eq '');
 
-if ( $opts{R} or $opts{refresh} )
+if ( $opts{refresh} )
 {
     print "Engaging refresh mode\n";
     $maindir='.';
