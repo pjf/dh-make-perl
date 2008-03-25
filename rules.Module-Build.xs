@@ -38,7 +38,7 @@ clean:
 	dh_testroot
 	dh_clean build-stamp install-stamp
 	# Add commands to clean up after the build process here
-	[ ! -f Build ] || $(PERL) Build distclean
+	[ ! -f Build ] || $(PERL) Build --allow_mb_mismatch 1 distclean
 
 install: install-stamp
 install-stamp: build-stamp

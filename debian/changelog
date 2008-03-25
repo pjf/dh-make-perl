@@ -1,5 +1,6 @@
 dh-make-perl (0.41) UNRELEASED; urgency=low
 
+  [ Damyan Ivanov ]
   * new command line switch, --refresh, causing re-creation of debian/rules
     using the current templates. Useful when updating packages with ancient
     debian/rules.
@@ -7,7 +8,11 @@ dh-make-perl (0.41) UNRELEASED; urgency=low
   * create debian/watch whenever upstream URL is available, not only if --cpan
     is given
 
- -- Damyan Ivanov <dmn@debian.org>  Mon, 24 Mar 2008 16:24:29 +0200
+  [ Ivan Kohler ]
+  * Add "--allow_mb_mismatch 1" to M:B invocation of "Build distclean" in
+    rules.Module-Build.* templates.
+
+ -- Ivan Kohler <ivan-debian@420.am>  Mon, 24 Mar 2008 17:11:28 -0700
 
 dh-make-perl (0.40) unstable; urgency=low
 
