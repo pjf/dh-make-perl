@@ -669,7 +669,7 @@ sub extract_changelog {
 	$dir .= '/' unless $dir =~ m(/$);
 	find(sub {
 		$changelog = substr($File::Find::name, length($dir))
-			if (!defined($changelog) && /^change(s|log)$/i && (! $opts{exclude} || ! $File::Find::name =~ /$opts{exclude}/));
+			if (!defined($changelog) && /^change(s|log)$/i and (! $opts{exclude} or $File::Find::name !~ /$opts{exclude}/));
 	}, $dir);
 }
 
@@ -687,7 +687,7 @@ sub extract_examples {
 	$dir .= '/' unless $dir =~ m(/$);
 	find(sub {
 		push (@examples, substr($File::Find::name, length($dir)) . '/*')
-			if (/^(examples|eg|samples?)$/i && (! $opts{exclude} || ! $File::Find::name =~ /$opts{exclude}/)) ;
+			if (/^(examples|eg|samples?)$/i and (! $opts{exclude} or $File::Find::name !~ /$opts{exclude}/)) ;
 	}, $dir);
 }
 
