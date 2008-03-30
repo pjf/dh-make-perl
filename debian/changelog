@@ -7,6 +7,9 @@ dh-make-perl (0.41) UNRELEASED; urgency=low
   * remove trailing blank from usage text
   * create debian/watch whenever upstream URL is available, not only if --cpan
     is given
+  * when module has no specific perl version requirements, fall back to "perl
+    (>= 5.6.0-12)" for B-D-I, like dh_perl. Remove retrieval of (now unised)
+    information about the available perl version.
 
   [ Ivan Kohler ]
   * Add "--allow_mb_mismatch 1" to M:B invocation of "Build distclean" in

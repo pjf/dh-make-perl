@@ -14,12 +14,6 @@ use strict;
 
 # TODO: 
 # * get more info from the package (maybe using CPAN methods)
-# * about the version of the build-dependency on perl
-#   - if there is a META.yml file:
-#     - if it says some version of Perl is required, use that
-#   - otherwise, or if the version in META.yml is less than 5.6.0,
-#     use >= 5.6.0-12, where arch-indep modules are moved to /usr/share/perl5
-#     (see dh_perl)
 
 ######################################################################
 # This Pod::Parser must be declared before the main program flow. If you
@@ -90,18 +84,21 @@ sub interior_sequence {
 ######################################################################
 # Main dh-make-perl starts here, don't look any further!
 package main;
-my (@stdmodules, $perl_pkg, $debstdversion, $priority, $section, $depends, 
-    $bdepends, $bdependsi, $maintainer, $arch, $closes, $date, $debiandir,
-    $startdir, $dh_compat, $datadir, $homedir, $email);
+my (@stdmodules, $min_perl_version, $debstdversion, $priority, $section,
+    $depends, $bdepends, $bdependsi, $maintainer, $arch, $closes, $date,
+    $debiandir, $startdir, $dh_compat, $datadir, $homedir, $email);
 our %overrides;
-
-$perl_pkg = get_perl_pkg_details();
 
 $debstdversion = '3.7.3';
 $priority = 'optional';
 $section = 'perl';
 $depends = '${perl:Depends}';
-$bdependsi = "perl (>= $perl_pkg->{Version})";
+# 5.6.0-12 is where arch-indep modules are moved in /usr/share/perl5
+# (according to dh_perl)
+# if the module has stricter requirements, this build-dependency
+# is replaced below by calling substitute_perl_dependency
+$min_perl_version = '5.6.10-12';
+$bdependsi = "perl (>= $min_perl_version)";
 $bdepends = 'debhelper (>= 5)';
 $arch = 'all';
 $date = `date -R`;
@@ -286,12 +283,6 @@ sub get_stdmodules {
     }
 
     return sort @modules;
-}
-
-sub get_perl_pkg_details {
-    my (@dpkg_info);
-    chomp( @dpkg_info =  grep /^\S/, `dpkg -p perl`);
-       return( { map { m/^(\S+?):\s+(.*)/; $1 => $2} @dpkg_info })  ;
 }
 
 sub setup_dir {
@@ -874,7 +865,7 @@ sub substitute_perl_dependency {
     # Remember they will be fed into the regex engine.
     $dep_str = "perl (>= $version)";
     $old_dep_str = '\\$\\{perl:Depends\\}';
-    $old_bdep_str = "perl \\(>= $perl_pkg->{Version}\\)";
+    $old_bdep_str = "perl \\(>= $min_perl_version\\)";
 
     unless ($depends =~ s/$old_dep_str/$dep_str/ and
 	    ($bdepends =~ s/$old_bdep_str/$dep_str/ or
