@@ -14,6 +14,12 @@ use strict;
 
 # TODO: 
 # * get more info from the package (maybe using CPAN methods)
+# * about the version of the build-dependency on perl
+#   - if there is a META.yml file:
+#     - if it says some version of Perl is required, use that
+#   - otherwise, or if the version in META.yml is less than 5.6.0,
+#     use >= 5.6.0-12, where arch-indep modules are moved to /usr/share/perl5
+#     (see dh_perl)
 
 ######################################################################
 # This Pod::Parser must be declared before the main program flow. If you
