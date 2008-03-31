@@ -1,4 +1,4 @@
-dh-make-perl (0.41) UNRELEASED; urgency=low
+dh-make-perl (0.41) unstable; urgency=low
 
   [ Damyan Ivanov ]
   * new command line switch, --refresh, causing re-creation of debian/rules
@@ -15,7 +15,7 @@ dh-make-perl (0.41) UNRELEASED; urgency=low
   * Add "--allow_mb_mismatch 1" to M:B invocation of "Build distclean" in
     rules.Module-Build.* templates.
 
- -- Ivan Kohler <ivan-debian@420.am>  Mon, 24 Mar 2008 17:11:28 -0700
+ -- Damyan Ivanov <dmn@debian.org>  Mon, 31 Mar 2008 21:51:24 +0300
 
 dh-make-perl (0.40) unstable; urgency=low
 
