@@ -1336,12 +1336,12 @@ of daemons might get upset ;-)
 
 Refresh mode.
 
-Instead of creating new debian/ directory, C<--refresh> makes C<dh-make-perl>
-to re-create only C<debian/rules> according to the current templates.
+Instead of creating new debian/ directory, B<--refresh> makes B<dh-make-perl>
+to re-create only B<debian/rules> according to the current templates.
 
-This is useful when C<debian/rules> was created using older templates and
+This is useful when B<debian/rules> was created using older templates and
 doesn't contain much customisations. As always, you're strongly encouraged to
-verify if C<debian/rules> looks sane.
+verify if B<debian/rules> looks sane.
 
 =back
 
