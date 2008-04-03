@@ -171,6 +171,8 @@ my $tarball = setup_dir();
 $meta = process_meta("$maindir/META.yml") if (-f "$maindir/META.yml");
 findbin_fix();
 
+$arch = $opts{arch} if defined $opts{arch};
+
 if (defined $opts{e}) {
   $email = $opts{e};
 } elsif (defined $opts{email}) {

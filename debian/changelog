@@ -1,3 +1,10 @@
+dh-make-perl (0.42) UNRELEASED; urgency=low
+
+  * Add a line to actually use the command line option --arch; thanks to
+    Jack Bates for reporting the problem (closes: #474180).
+
+ -- gregor herrmann <gregor+debian@comodo.priv.at>  Fri, 04 Apr 2008 00:49:41 +0200
+
 dh-make-perl (0.41) unstable; urgency=low
 
   [ Damyan Ivanov ]
