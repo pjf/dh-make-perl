@@ -759,7 +759,7 @@ sub extract_depends {
 	if (`which apt-file`) {
 	    $has_apt_file = 1;
 	    foreach my $module (@uses) {
-		my (@search, $ls, $ver, $re, $mod);
+		my (@rawsearch, @search, $ls, $ver, $re, $mod);
 
 		if ($module eq 'perl') {
 		    substitute_perl_dependency($dep_hash{perl});
@@ -770,13 +770,20 @@ sub extract_depends {
 		print "Searching for $module package using apt-file.\n";
 		$module =~ s|::|/|g;
 
-		@search = `apt-file search $module.pm`;
-
 		# Regex's to search the return of apt-file to find the right pkg
 		$ls  = '(?:lib|share)';
 		$ver = '\d+(\.\d+)+';
 		$re  = "usr/(?:$ls/perl/$ver|$ls/perl5)/$module\\.pm";
 
+		@rawsearch = `apt-file search -x '$re'`;
+
+		# rank non -perl packages lower
+		@search = sort {
+			if ($a !~ /-perl: /)    { return 1; }
+			elsif ($b !~ /-perl: /) { return -1; }
+			else                    { return $a cmp $b; } # or 0?
+		} @rawsearch;
+		
 		for (@search) {
 		    # apt-file output
 		    # package-name: path/to/perl/module.pm

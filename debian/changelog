@@ -1,8 +1,11 @@
 dh-make-perl (0.43) UNRELEASED; urgency=low
 
   * Evaluate --arch command line option earlier.
+  * Improve searching for dependencies with apt-file by using regexps; needs
+    a recent version of apt-file.
+  * Rank packages not ending in -perl lower in apt-file search results.
 
- -- gregor herrmann <gregor+debian@comodo.priv.at>  Tue, 08 Apr 2008 19:44:34 +0200
+ -- gregor herrmann <gregoa@debian.org>  Tue, 22 Apr 2008 20:42:25 +0200
 
 dh-make-perl (0.42) unstable; urgency=low
 

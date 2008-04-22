@@ -18,7 +18,7 @@ Architecture: all
 Depends: debhelper (>= 4.0.2), libpod-parser-perl, ${perl:Depends}, make,
  dpkg-dev, fakeroot, ${misc:Depends}, libyaml-perl,  libmodule-depends-perl, 
  libwww-mechanize-perl
-Recommends: apt-file, libmodule-build-perl
+Recommends: apt-file (>= 2.1.0), libmodule-build-perl
 Description: Create Debian packages from perl modules
  dh-make-perl will create the files required to build a Debian source
  package out of a perl package.  This works for most simple packages
