@@ -1296,7 +1296,12 @@ CVS and .svn directories.
 
 =item B<--build>
 
-Builds the package after setting it up
+Builds the package after setting it up.
+
+NB: This builds only a binary package (by calling "fakeroot debian/rules
+binary") and does not sign the package. It is meant for a quick local
+install of a package, not for creating a package ready for submission to the
+Debian archive.
 
 =item B<--install>
 

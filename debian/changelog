@@ -4,8 +4,10 @@ dh-make-perl (0.43) UNRELEASED; urgency=low
   * Improve searching for dependencies with apt-file by using regexps; needs
     a recent version of apt-file.
   * Rank packages not ending in -perl lower in apt-file search results.
+  * Improve documentation of the --build option, thanks to Antony Gelberg
+    for the proposal.
 
- -- gregor herrmann <gregoa@debian.org>  Tue, 22 Apr 2008 20:42:25 +0200
+ -- gregor herrmann <gregoa@debian.org>  Sat, 03 May 2008 00:50:52 +0200
 
 dh-make-perl (0.42) unstable; urgency=low
 
