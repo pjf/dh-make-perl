@@ -1,5 +1,6 @@
-dh-make-perl (0.43) UNRELEASED; urgency=low
+dh-make-perl (0.43) unstable; urgency=low
 
+  [ gregor herrmann ]
   * Evaluate --arch command line option earlier.
   * Improve searching for dependencies with apt-file by using regexps; needs
     a recent version of apt-file.
@@ -7,7 +8,7 @@ dh-make-perl (0.43) UNRELEASED; urgency=low
   * Improve documentation of the --build option, thanks to Antony Gelberg
     for the proposal.
 
- -- gregor herrmann <gregoa@debian.org>  Sat, 03 May 2008 00:50:52 +0200
+ -- Damyan Ivanov <dmn@debian.org>  Thu, 08 May 2008 09:58:23 +0300
 
 dh-make-perl (0.42) unstable; urgency=low
 
