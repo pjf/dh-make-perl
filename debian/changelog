@@ -1,4 +1,4 @@
-dh-make-perl (0.44) UNRELEASED; urgency=low
+dh-make-perl (0.44) unstable; urgency=low
 
   [ gregor herrmann ]
   * Fix check_for_xs(), thanks to Kevin Ryde for the bug report and the
@@ -20,7 +20,7 @@ dh-make-perl (0.44) UNRELEASED; urgency=low
   [ Damyan Ivanov ]
   * Remove Roberto C. Sanchez from Uploaders on his request.
 
- -- gregor herrmann <gregoa@debian.org>  Sat, 10 May 2008 17:48:10 +0200
+ -- gregor herrmann <gregoa@debian.org>  Sat, 10 May 2008 22:41:06 +0200
 
 dh-make-perl (0.43) unstable; urgency=low
 
