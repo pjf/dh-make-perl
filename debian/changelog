@@ -1,5 +1,6 @@
 dh-make-perl (0.44) UNRELEASED; urgency=low
 
+  [ gregor herrmann ]
   * Fix check_for_xs(), thanks to Kevin Ryde for the bug report and the
     patch (closes: #480420).
   * Escape dot in exclude pattern, also reported by Kevin Ryde in the same
@@ -13,6 +14,9 @@ dh-make-perl (0.44) UNRELEASED; urgency=low
     it instead of moving the contents beneath it.
   * Slightly improve wording when searching with apt-file.
   * Handle errors from moving directories.
+
+  [ Damyan Ivanov ]
+  * Remove Roberto C. Sanchez from Uploaders on his request.
 
  -- gregor herrmann <gregoa@debian.org>  Sat, 10 May 2008 17:48:10 +0200
 
