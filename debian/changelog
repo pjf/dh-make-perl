@@ -6,7 +6,7 @@ dh-make-perl (0.44) UNRELEASED; urgency=low
     bugreport.
   * CPAN.pm creates build directories with a random part since 1.88_59; use
     the new CPAN::Distribution::base_id method to get nice directory names
-    again (introduced in 1.91_53).
+    again (introduced in 1.91_53), if our CPAN.pm is new enough.
   * Initialize $desc to avoid a warning.
   * Only mangle $longdesc if it is not empty, avoids results like " .".
   * If the directory containing the unpacked tarball already exists rename
