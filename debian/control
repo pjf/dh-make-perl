@@ -6,7 +6,7 @@ Build-Depends-Indep: perl
 Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
 Uploaders: Gunnar Wolf <gwolf@debian.org>, Wolfgang Schemmel <debian@37.org>,
  Christopher Sacca <csacca@thecsl.org>,
- Damyan Ivanov <dmn@debian.org>, gregor herrmann <gregor+debian@comodo.priv.at>,
+ Damyan Ivanov <dmn@debian.org>, gregor herrmann <gregoa@debian.org>,
  David Paleino <d.paleino@gmail.com>, 
  Oliver Gorwits <oliver.gorwits@oucs.ox.ac.uk>
 Standards-Version: 3.7.3

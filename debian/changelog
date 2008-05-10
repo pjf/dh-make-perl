@@ -14,6 +14,8 @@ dh-make-perl (0.44) UNRELEASED; urgency=low
     it instead of moving the contents beneath it.
   * Slightly improve wording when searching with apt-file.
   * Handle errors from moving directories.
+  * Change my email address in several files.
+  * debian/copyright: update years of contributions.
 
   [ Damyan Ivanov ]
   * Remove Roberto C. Sanchez from Uploaders on his request.

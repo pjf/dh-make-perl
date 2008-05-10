@@ -4,12 +4,12 @@ It is currently maintained by Gunnar Wolf and others, under the umbrella of the
 Debian Perl Group <debian-perl@lists.debian.org>
 
 Copyright (c) 2000,2001 Paolo Molaro <lupus@debian.org>
-          (c) 2002,2003 Ivan Kohler <ivan-debian@420.am>
+          (c) 2002,2003,2008 Ivan Kohler <ivan-debian@420.am>
           (c) 2003,2004 Marc 'HE' Brockschmidt <he@debian.org>
           (c) 2005-2007 Gunnar Wolf <gwolf@debian.org>
           (c) 2006 Frank Lichtenheld <djpig@debian.org>
-          (c) 2007 Gregor Herrmann <gregor+debian@comodo.priv.at>
-          (c) 2007 Damyan Ivanov <dmn@debian.org>
+          (c) 2007-2008 Gregor Herrmann <gregoa@debian.org>
+          (c) 2007-2008 Damyan Ivanov <dmn@debian.org>
 
 You can do anything with it according to the GPLv2: look
 in /usr/share/common-licenses/GPL-2 on your Debian system.
