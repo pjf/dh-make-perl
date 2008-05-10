@@ -141,7 +141,7 @@ GetOptions(\%opts,
 die usage_instructions() if $opts{help};
 die "CPANPLUS support disabled, sorry" if $opts{cpanplus};
 
-$opts{exclude} = '(?:\/|^)(?:CVS|.svn)\/' if (!defined $opts{exclude} or
+$opts{exclude} = '(?:\/|^)(?:CVS|\.svn)\/' if (!defined $opts{exclude} or
 					  $opts{exclude} eq '');
 
 $arch = $opts{arch} if defined $opts{arch};
@@ -184,6 +184,8 @@ $maintainer = get_maintainer($email);
 
 if (defined $opts{desc}) {
   $desc = $opts{desc};
+} else {
+  $desc = '';
 }
 ($pkgname, $version) = extract_basic();
 if (defined $opts{p}) {
@@ -356,8 +358,19 @@ sub setup_dir {
 
 		copy ($tarball, $ENV{'PWD'});
 		$tarball = $ENV{'PWD'} . "/" . basename($tarball);
-	        $new_maindir = $ENV{PWD}."/".basename($maindir);
-		`mv "$maindir" "$new_maindir"`;
+		# build_dir contains a random part since 1.88_59
+		# use the new CPAN::Distribution::base_id (introduced in 1.91_53)
+	        $new_maindir = $ENV{PWD} . "/" . (
+	        	$cpanversion < 1.9153 ? basename($maindir) : $dist->base_id
+		);
+		# rename existing directory
+		if (-d $new_maindir && system("mv", "$new_maindir", "$new_maindir.$$") == 0) {
+		        print '='x70,"\n";
+			print "Unpacked tarball already existed, directory renamed to $new_maindir.$$\n";
+		        print '='x70,"\n";
+		}
+		system("mv", "$maindir", "$new_maindir") == 0 
+			or die "Failed to move $maindir to $new_maindir: $!";
 		$maindir = $new_maindir;
 
 	} elsif ($opts{cpanplus}) {
@@ -640,6 +653,7 @@ sub extract_desc {
 			|| $parser->get('DETAILS')
 			|| $desc
 			|| ''; # Just to avoid warnings...
+	} else {
 		$longdesc =~ s/^\s+//s;
 		$longdesc =~ s/\s+$//s;
 		$longdesc =~ s/^\t/ /mg;
@@ -767,7 +781,7 @@ sub extract_depends {
 		}
 
 		$mod = $module;
-		print "Searching for $module package using apt-file.\n";
+		print "Searching for package containing $module using apt-file.\n";
 		$module =~ s|::|/|g;
 
 		# Regex's to search the return of apt-file to find the right pkg
@@ -887,7 +901,7 @@ sub substitute_perl_dependency {
 }
 
 sub check_for_xs {
-	(! $opts{exclude} || ! $File::Find::name =~ /$opts{exclude}/) && /\.(xs|c|cpp|cxx)$/i && do {
+	(! $opts{exclude} or $File::Find::name !~ /$opts{exclude}/) && /\.(xs|c|cpp|cxx)$/i && do {
 		$arch = 'any';
 	};
 }

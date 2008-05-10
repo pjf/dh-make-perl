@@ -1,3 +1,21 @@
+dh-make-perl (0.44) UNRELEASED; urgency=low
+
+  * Fix check_for_xs(), thanks to Kevin Ryde for the bug report and the
+    patch (closes: #480420).
+  * Escape dot in exclude pattern, also reported by Kevin Ryde in the same
+    bugreport.
+  * CPAN.pm creates build directories with a random part since 1.88_59; use
+    the new CPAN::Distribution::base_id method to get nice directory names
+    again (introduced in 1.91_53).
+  * Initialize $desc to avoid a warning.
+  * Only mangle $longdesc if it is not empty, avoids results like " .".
+  * If the directory containing the unpacked tarball already exists rename
+    it instead of moving the contents beneath it.
+  * Slightly improve wording when searching with apt-file.
+  * Handle errors from moving directories.
+
+ -- gregor herrmann <gregoa@debian.org>  Sat, 10 May 2008 17:48:10 +0200
+
 dh-make-perl (0.43) unstable; urgency=low
 
   [ gregor herrmann ]
