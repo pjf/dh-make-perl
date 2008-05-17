@@ -226,7 +226,7 @@ die "Cannot find a description for the package: use the --desc switch\n"
     unless $desc;
 print "Package does not provide a long description - " , 
     " Please fill it in manually.\n"
-    if (!defined $longdesc or $longdesc =~ /^\s*\.?\s*/);
+    if (!defined $longdesc or $longdesc =~ /^\s*\.?\s*$/);
 print "Using maintainer: $maintainer\n";
 print "Found changelog: $changelog\n" if defined $changelog;
 print "Found docs: @docs\n";
@@ -651,9 +651,9 @@ sub extract_desc {
 	unless ($longdesc) {
 		$longdesc = $parser->get('DESCRIPTION')
 			|| $parser->get('DETAILS')
-			|| $desc
-			|| ''; # Just to avoid warnings...
-	} else {
+			|| $desc;
+	}
+	if (defined $longdesc && $longdesc !~ /^$/) {
 		$longdesc =~ s/^\s+//s;
 		$longdesc =~ s/\s+$//s;
 		$longdesc =~ s/^\t/ /mg;

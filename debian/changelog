@@ -1,3 +1,12 @@
+dh-make-perl (0.45) UNRELEASED; urgency=low
+
+  * Fix mangling of long description, which was broken in 0.44; thanks to
+    Kevin Ryde for the bugreport (closes: #481560).
+  * Tighten regexp when checking for empty long description, avoids spurious
+    warnings.
+
+ -- gregor herrmann <gregoa@debian.org>  Sat, 17 May 2008 14:59:49 +0200
+
 dh-make-perl (0.44) unstable; urgency=low
 
   [ gregor herrmann ]
