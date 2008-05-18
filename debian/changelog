@@ -1,3 +1,10 @@
+dh-make-perl (0.46) UNRELEASED; urgency=low
+
+  * Replace "::" with "-" in $perlname in all cases, otherwise the URLs in
+    debian/watch and debian/control's Homepage field are wrong.
+
+ -- gregor herrmann <gregoa@debian.org>  Sun, 18 May 2008 16:12:47 +0200
+
 dh-make-perl (0.45) unstable; urgency=low
 
   * Fix mangling of long description, which was broken in 0.44; thanks to

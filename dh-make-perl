@@ -452,7 +452,6 @@ sub extract_basic {
     ($perlname, $version) = extract_name_ver();
     find(\&check_for_xs, $maindir);
     $pkgname = lc $perlname;
-    $pkgname =~ s/::/-/;
     $pkgname = 'lib'.$pkgname unless $pkgname =~ /^lib/;
     $pkgname .= '-perl' unless ($pkgname =~ /-perl$/ and $opts{cpan} !~ /::perl$/i);
 
@@ -508,6 +507,7 @@ sub extract_name_ver {
 	    ($name, $ver) = extract_name_ver_from_makefile($makefile);
 	}
 
+	$name =~ s/::/-/g;
 	return ($name, $ver);
 }
 
