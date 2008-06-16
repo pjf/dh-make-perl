@@ -151,6 +151,7 @@ if ( $opts{refresh} )
 {
     print "Engaging refresh mode\n";
     $maindir='.';
+    ($pkgname, $version) = extract_basic();  # also detects arch-dep package
     $module_build = (-f "$maindir/Build.PL") ? "Module-Build" : "MakeMaker";
     $debiandir='./debian';
     extract_changelog($maindir);
@@ -199,6 +200,7 @@ unless (defined $opts{version}) {
 } else {
 	$pkgversion = $opts{version};
 }
+
 move ($tarball, dirname($tarball) . "/${pkgname}_${version}.orig.tar.gz") if ($tarball && $tarball =~ /(?:\.tar\.gz|\.tgz)$/);
 $module_build = (-f "$maindir/Build.PL") ? "Module-Build" : "MakeMaker";
 extract_changelog($maindir);

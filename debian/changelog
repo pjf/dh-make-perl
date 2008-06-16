@@ -8,6 +8,7 @@ dh-make-perl (0.46) UNRELEASED; urgency=low
   * add --dh <ver> switch, controlling the set of rules files to use and
     desired debhelper compatibility level. Defaults to 5
   * add rules.dh7.{xs,noxs}
+  * fix not detecting arch-dep packages in refresh mode (-R)
 
  -- gregor herrmann <gregoa@debian.org>  Sun, 18 May 2008 16:12:47 +0200
 
