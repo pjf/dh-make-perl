@@ -1399,8 +1399,8 @@ verify if B<debian/rules> looks sane.
 =item B<--dh ver>
 
 Set desired debhelper version. If C<ver> is 7, generated debian/rules is
-minimalisting, using the auto-mode of debhelper. Also, any additional
-documentation and examples are listed in additinal files under debian/, instead
+minimalistic, using the auto-mode of debhelper. Also, any additional
+documentation and examples are listed in additional files under debian/, instead
 of being listed in debian/rules
 
 =back
