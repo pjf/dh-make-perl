@@ -89,7 +89,7 @@ my (@stdmodules, $min_perl_version, $debstdversion, $priority, $section,
     $debiandir, $startdir, $datadir, $homedir, $email);
 our %overrides;
 
-$debstdversion = '3.7.3';
+$debstdversion = '3.8.0';
 $priority = 'optional';
 $section = 'perl';
 $depends = '${perl:Depends}';

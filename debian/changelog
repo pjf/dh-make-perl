@@ -9,6 +9,8 @@ dh-make-perl (0.46) UNRELEASED; urgency=low
     desired debhelper compatibility level. Defaults to 5
   * add rules.dh7.{xs,noxs}
   * fix not detecting arch-dep packages in refresh mode (-R)
+  * Bump tandards-Version to 3.8.0 (both in dh-make-perl and generated
+    packages)
 
  -- gregor herrmann <gregoa@debian.org>  Sun, 18 May 2008 16:12:47 +0200
 
