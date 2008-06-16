@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+
+build:
+	dh $@
+
+clean:
+	dh $@
+
+install: build
+	dh $@
+
+binary-arch:
+
+binary-indep: install
+	dh $@
+
+binary: binary-arch binary-indep

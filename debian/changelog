@@ -1,7 +1,13 @@
 dh-make-perl (0.46) UNRELEASED; urgency=low
 
+  [ gregor herrmann ]
   * Replace "::" with "-" in $perlname in all cases, otherwise the URLs in
     debian/watch and debian/control's Homepage field are wrong.
+
+  [ Damyan Ivanov ]
+  * add --dh <ver> switch, controlling the set of rules files to use and
+    desired debhelper compatibility level. Defaults to 5
+  * add rules.dh7.{xs,noxs}
 
  -- gregor herrmann <gregoa@debian.org>  Sun, 18 May 2008 16:12:47 +0200
 
