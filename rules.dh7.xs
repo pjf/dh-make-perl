@@ -2,7 +2,7 @@
 
 build: build-stamp
 build-stamp:
-	dh $@
+	dh build
 	touch $@
 
 clean:
@@ -10,7 +10,7 @@ clean:
 
 install: install-stamp
 install-stamp: build-stamp
-	dh $@
+	dh install
 	touch $@
 
 binary-arch: install
@@ -19,3 +19,5 @@ binary-arch: install
 binary-indep:
 
 binary: binary-arch binary-indep
+
+.PHONY: binary binary-arch binary-indep install clean build
