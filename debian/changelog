@@ -15,6 +15,10 @@ dh-make-perl (0.46) UNRELEASED; urgency=low
     email_date function. Avoids a fork. Thanks to Stephen Gran.
     + Add libemail-date-format-perl to Depends.
 
+  [ gregor herrmann ]
+  * Add stamp-files to rules.dh7.{xs,noxs} (cf.
+    /usr/share/doc/debhelper/examples/rules.simple from debhelper 7.0.11)
+
  -- gregor herrmann <gregoa@debian.org>  Sun, 18 May 2008 16:12:47 +0200
 
 dh-make-perl (0.45) unstable; urgency=low
