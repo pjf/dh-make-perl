@@ -10,6 +10,7 @@ use Getopt::Long;
 use Cwd;
 use CPAN;
 use Module::Depends::Intrusive;
+use Email::Date::Format qw(email_date);
 use strict;
 
 # TODO: 
@@ -100,7 +101,7 @@ $depends = '${perl:Depends}';
 $min_perl_version = '5.6.10-12';
 $bdependsi = "perl (>= $min_perl_version)";
 $arch = 'all';
-$date = `date -R`;
+$date = email_date(time);
 $startdir = getcwd();
 $datadir = '/usr/share/dh-make-perl';
 $homedir = "$ENV{HOME}/.dh-make-perl";
