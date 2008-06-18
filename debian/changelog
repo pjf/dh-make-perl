@@ -1,3 +1,11 @@
+dh-make-perl (0.47) UNRELEASED; urgency=low
+
+  * rules.Module-Build.xs: add config=optimize="$(CFLAGS)" to Build.PL
+    invocation, causing honoring DEB_BUILD_OPTS=noopt. Thanks to Niko Tyni.
+    Closes: #480110
+
+ -- Damyan Ivanov <dmn@debian.org>  Wed, 18 Jun 2008 21:29:28 +0300
+
 dh-make-perl (0.46) unstable; urgency=low
 
   [ gregor herrmann ]

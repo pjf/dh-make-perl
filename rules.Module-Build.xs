@@ -28,7 +28,7 @@ build: build-stamp
 build-stamp:
 	dh_testdir
 	# Add commands to compile the package here
-	$(PERL) Build.PL installdirs=vendor
+	$(PERL) Build.PL installdirs=vendor config=optimize="$(CFLAGS)"
 	OPTIMIZE="$(CFLAGS)" $(PERL) Build
 	#TEST#
 	touch $@
