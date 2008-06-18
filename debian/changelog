@@ -1,4 +1,4 @@
-dh-make-perl (0.46) UNRELEASED; urgency=low
+dh-make-perl (0.46) unstable; urgency=low
 
   [ gregor herrmann ]
   * Replace "::" with "-" in $perlname in all cases, otherwise the URLs in
@@ -20,7 +20,7 @@ dh-make-perl (0.46) UNRELEASED; urgency=low
     /usr/share/doc/debhelper/examples/rules.simple from debhelper 7.0.11)
   * Call process_meta also in refresh mode to get package name more easily.
 
- -- gregor herrmann <gregoa@debian.org>  Sun, 18 May 2008 16:12:47 +0200
+ -- Damyan Ivanov <dmn@debian.org>  Wed, 18 Jun 2008 21:09:48 +0300
 
 dh-make-perl (0.45) unstable; urgency=low
 
