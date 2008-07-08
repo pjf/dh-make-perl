@@ -1398,8 +1398,6 @@ This is useful when B<debian/rules> was created using older templates and
 doesn't contain much customisations. As always, you're strongly encouraged to
 verify if B<debian/rules> looks sane.
 
-=back
-
 =item B<--dh ver>
 
 Set desired debhelper version. If C<ver> is 7, generated debian/rules is

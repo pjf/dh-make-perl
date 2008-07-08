@@ -1,3 +1,10 @@
+dh-make-perl (0.48) UNRELEASED; urgency=low
+
+  * Fix POD error, thanks to Fabian Pietsch for the bug report and the patch
+    (closes: #489916).
+
+ -- gregor herrmann <gregoa@debian.org>  Tue, 08 Jul 2008 19:53:23 +0200
+
 dh-make-perl (0.47) unstable; urgency=low
 
   * rules.Module-Build.xs: add config=optimize="$(CFLAGS)" to Build.PL
