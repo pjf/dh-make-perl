@@ -1,4 +1,4 @@
-dh-make-perl (0.48) UNRELEASED; urgency=low
+dh-make-perl (0.48) unstable; urgency=low
 
   [ gregor herrmann ]
   * Fix POD error, thanks to Fabian Pietsch for the bug report and the patch
@@ -8,7 +8,7 @@ dh-make-perl (0.48) UNRELEASED; urgency=low
   * extract_base_copyright: look for files relative to $maindir, not the
     current directory. Thanks to Matt Kraai for the patch. Closes:# 493058
 
- -- gregor herrmann <gregoa@debian.org>  Tue, 08 Jul 2008 19:53:23 +0200
+ -- Damyan Ivanov <dmn@debian.org>  Thu, 31 Jul 2008 09:19:50 +0300
 
 dh-make-perl (0.47) unstable; urgency=low
 
