@@ -1,7 +1,12 @@
 dh-make-perl (0.48) UNRELEASED; urgency=low
 
+  [ gregor herrmann ]
   * Fix POD error, thanks to Fabian Pietsch for the bug report and the patch
     (closes: #489916).
+
+  [ Damyan Ivanov ]
+  * extract_base_copyright: look for files relative to $maindir, not the
+    current directory. Thanks to Matt Kraai for the patch. Closes:# 493058
 
  -- gregor herrmann <gregoa@debian.org>  Tue, 08 Jul 2008 19:53:23 +0200
 

@@ -445,7 +445,7 @@ sub process_meta {
 }
 
 sub extract_basic_copyright {
-	for my $f (qw(LICENSE LICENCE COPYING)) {
+	for my $f (map("$maindir/$_", qw(LICENSE LICENCE COPYING))) {
 		if (-f $f) {
 			return `cat $f`;
 		}
