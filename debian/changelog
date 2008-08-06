@@ -1,3 +1,9 @@
+dh-make-perl (0.49) UNRELEASED; urgency=low
+
+  * Default debhelper level on generated packages is 7
+
+ -- Damyan Ivanov <dmn@debian.org>  Wed, 06 Aug 2008 18:40:13 +0300
+
 dh-make-perl (0.48) unstable; urgency=low
 
   [ gregor herrmann ]

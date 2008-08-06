@@ -119,7 +119,7 @@ my ($module_build);
 my (@docs, @examples, $changelog, @args);
 
 my %opts = (
-    'dh'   => 5,
+    'dh'   => 7,
 );
 
 my $mod_cpan_version;
