@@ -168,7 +168,7 @@ if ( $opts{refresh} )
         (defined $changelog ? $changelog : ''),
         \@docs, \@examples,
     );
-    print "Done\n";
+    print "--- Done\n";
     exit 0;
 }
 
@@ -255,7 +255,7 @@ fix_rules("$debiandir/rules", (defined $changelog ? $changelog : ''), \@docs, \@
 apply_final_overrides();
 build_package($maindir) if $opts{build} or $opts{install};
 install_package($debiandir) if $opts{install};
-print "Done\n";
+print "--- Done\n";
 exit(0);
 
 sub usage_instructions {
@@ -445,12 +445,13 @@ sub process_meta {
 }
 
 sub extract_basic_copyright {
-	for my $f (map("$maindir/$_", qw(LICENSE LICENCE COPYING))) {
-		if (-f $f) {
-			return `cat $f`;
-		}
+    for my $f (map("$maindir/$_", qw(LICENSE LICENCE COPYING))) {
+	if (-f $f) {
+	    my $fh = _file_r($f);
+	    return join('', $fh->getlines);
 	}
-	return undef;
+    }
+    return undef;
 }
 
 sub extract_basic {
@@ -668,14 +669,17 @@ sub extract_desc {
 		$longdesc =~ s/\r//g;
 	}
 
-	$copyright = $copyright || $parser->get('COPYRIGHT');
+	$copyright = $copyright || $parser->get('COPYRIGHT') ||
+	    $parser->get('LICENSE') || $parser->get('COPYRIGHT & LICENSE');
 	if (!$author) {
 	    if (ref $meta->{author}) {
 		# Does the author information appear in META.yml?
 		$author = join(', ', @{$meta->{author}});
 	    } else {
-		# Get it from the POD
+		# Get it from the POD - and clean up
+		# trailing/preceding spaces!
 		$author = $parser->get('AUTHOR') || $parser->get('AUTHORS');
+		$author =~ s/^\s*(\S.*\S)\s*$/$1/gs if $author;
 	    }
 	}
 
@@ -1032,65 +1036,156 @@ sub create_compat {
 }
 
 sub create_copyright {
-        my $fh = _file_w(shift);
-	my $incomplete = '';
+    my ($fh, %fields, @res, @incomplete, $year);
+    $fh = _file_w(shift);
 
-	$fh->print(
-"This is the debian package for the $perlname module.
-It was created by $maintainer using dh-make-perl.
+    # In case $author spawns more than one line, indent them all.
+    my $cprt_author = $author || '(information incomplete)';
+    $cprt_author =~ s/\n/\n    /gs;
+    $cprt_author =~ s/^\s*$/    ./gm;
 
-");
-        if (defined $upsurl) {
-                $fh->print("It was downloaded from $upsurl\n\n");
+    push @res, "Format-Specification:
+    http://wiki.debian.org/Proposals/CopyrightFormat?action=recall&rev=196";
+
+    # Header section
+    %fields = (Name => $perlname, Maintainer => $cprt_author,
+	       Source => $upsurl);
+    for my $key (keys %fields) {
+	my $full = "Upstream-$key";
+	if ($fields{$key}) {
+	    push @res, "$full: $fields{$key}";
 	} else {
-	        $incomplete .= "No upstream URL\n";
-        }
-	$fh->print(
-"This copyright info was automatically extracted from the perl module.
-It may not be accurate, so you better check the module sources
-if you don\'t want to get into legal troubles.
-
-");
-	if (defined $author) {
-		$fh->print("The upstream author is: $author.\n");
-	} else {
-	        $incomplete .= "No upstream author\n";
+	    push @incomplete, "Could not get the information for $full";
 	}
+    }
+    push(@res, "Disclaimer: This copyright info was automatically extracted ",
+	 "    from the perl module. It may not be accurate, so you better ",
+	 "    check the module sources in order to ensure the module for its ",
+	 "    inclusion in Debian or for general legal information. Please, ",
+	 "    if licensing information is incorrectly generated, file a bug ",
+	 "    on dh-make-perl.");
+    push @res, '';
 
-	if (defined($copyright)) {
-		$fh->print($copyright);
-		# Fun with regexes
-		if ( $copyright =~ /terms as Perl itself/i ) {
-		    $fh->print("
+    # Files section - We cannot "parse" the module's licensing
+    # information for anything besides general information.
+    push @res, 'Files: *';
 
-Perl is distributed under your choice of the GNU General Public License or
-the Artistic License.  On Debian GNU/Linux systems, the complete text of the
-GNU General Public License can be found in \`/usr/share/common-licenses/GPL\'
-and the Artistic Licence in \`/usr/share/common-licenses/Artistic\'.
-");
-		} elsif ( $copyright =~ /GPL/ ) {
-		    $fh->print("
+    # Absence of author should have already been reported in the
+    # Header section
+    push @res, "Copyright: $cprt_author";
 
-The full text of the GPL is available on Debian systems in
-/usr/share/common-licenses/GPL
-");
+    # This is far from foolproof, but usually works with most
+    # boilerplate-generated modules.
+    #
+    # We go over the most common combinations only
+    if ($meta->{license} or $copyright) {
+	my (%texts, %licenses, $mangle_cprt);
+	%texts = ('Artistic' => 
+"    This program is free software; you can redistribute it and/or modify\n".
+"    it under the terms of the Artistic License, which comes with Perl.\n".
+"    On Debian GNU/Linux systems, the complete text of the Artistic License\n".
+"    can be found in /usr/share/common-licenses/Artistic",
+		  'GPL-1+' => 
+"    This program is free software; you can redistribute it and/or modify\n" .
+"    it under the terms of the GNU General Public License as published by \n" .
+"    the Free Software Foundation; either version 1, or (at your option)\n" .
+"    any later version.\n" .
+"    On Debian GNU/Linux systems, the complete text of the GNU General\n" .
+"    Public License can be found in `/usr/share/common-licenses/GPL'",
+		  'GPL-2' => 
+"    This program is free software; you can redistribute it and/or modify\n" .
+"    it under the terms of the GNU General Public License as published by\n" .
+"    the Free Software Foundation; version 2 dated June, 1991.\n" .
+"    On Debian GNU/Linux systems, the complete text of version 2 of the GNU\n".
+"    General Public License can be found in `/usr/share/common-licenses/GPL-2'",
+		  'GPL-2+' => 
+"    This program is free software; you can redistribute it and/or modify\n" .
+"    it under the terms of the GNU General Public License as published by\n" .
+"    the Free Software Foundation; version 2 dated June, 1991, or (at your\n" .
+"    option) any later version.\n".
+"    On Debian GNU/Linux systems, the complete text of version 2 of the GNU\n".
+"    General Public License can be found in `/usr/share/common-licenses/GPL-2'",
+		  'GPL-3' => 
+"    This program is free software; you can redistribute it and/or modify\n" .
+"    it under the terms of the GNU General Public License as published by\n" .
+"    the Free Software Foundation; version 3 dated June, 2007.\n" .
+"    On Debian GNU/Linux systems, the complete text of version 3 of the GNU\n".
+"    General Public License can be found in `/usr/share/common-licenses/GPL-3'",
+		  'GPL-3+' => 
+"    This program is free software; you can redistribute it and/or modify\n" .
+"    it under the terms of the GNU General Public License as published by\n" .
+"    the Free Software Foundation; version 3 dated June, 2007, or (at your\n" .
+"    option) any later version\n" .
+"    On Debian GNU/Linux systems, the complete text of version 3 of the GNU\n".
+"    General Public License can be found in `/usr/share/common-licenses/GPL-3'",
+		  'unparsable' => 
+"    No known license could be automatically determined for this module.\n".
+"    If this module conforms to a commonly used license, please report this\n".
+"    as a bug in dh-make-perl. In any case, please find the proper license\n".
+"    and fix this file!"
+	    );
+
+	# Pre-mangle the copyright information for the common similar cases
+	$mangle_cprt = $copyright;
+	$mangle_cprt =~ s/GENERAL PUBLIC LICENSE/GPL/g;
+
+	# Of course, more licenses (i.e. LGPL, BSD-like, Public
+	# Domain, etc.) could be added... Feel free to do so. Keep in
+	# mind that many licenses are not meant to be used as
+	# templates (i.e. you must add the author name and some
+	# information within the licensing text as such).
+	if ($meta && $meta->{license} =~ /perl/i or
+	    $mangle_cprt && $mangle_cprt =~ /terms\s*as\s*Perl\s*itself/is) {
+	    push @res, "License-Alias: Perl";
+	    $licenses{'GPL-1+'} = 1;
+	    $licenses{'Artistic'} = 1;
+	} else {
+	    if ($mangle_cprt =~ /[^L]GPL/) {
+		if ($mangle_cprt =~ /GPL.*version\s*1.*later\s+version/is) {
+		    $licenses{'GPL-1+'} = 1;
+		} elsif ($mangle_cprt =~ /GPL.*version\s*2.*later\s+version/is) {
+		    $licenses{'GPL-2+'} = 1;
+		} elsif ($mangle_cprt =~ /GPL.*version\s*2/is) {
+		    $licenses{'GPL-2'} = 1;
+		} elsif ($mangle_cprt =~ /GPL.*version\s*3.*later\s+version/is) {
+		    $licenses{'GPL-3+'} = 1;
+		} elsif ($mangle_cprt =~ /GPL.*version\s*3/is) {
+		    $licenses{'GPL-3'} = 1;
 		}
-	} else {
-	        $incomplete .= "No licensing information\n";
+	    }
+	    
+	    if ($mangle_cprt =~ /Artistic\s*License/is) {
+		$licenses{'Artistic'} = 1;
+	    }
+
+	    # Other licenses?
+
+	    if (! keys(%licenses)) {
+		$licenses{unparsable} = 1;
+		push(@incomplete,
+		     "Licensing information is present, but cannot be parsed");
+	    }
 	}
 
-	my $year = (localtime)[5]+1900;
-	$fh->print("
+	push @res, "License: " . join(' | ', keys %licenses);
 
-The Debian packaging is (C) $year, $maintainer and
-is licensed under the same terms as the software itself (see above).
-");
+	# debian/* files information - We default to the module being
+	# licensed as the superset of the module and Perl itself.
+	$licenses{'Artistic'} = $licenses{'GPL-1+'} = 1;
+	$year = (localtime)[5]+1900;
+	push(@res, "", "Files: debian/*", "Copyright: $year, $maintainer");
+	push @res, "License: ". join(' | ', keys %licenses);
 
-	$fh->close;
+	map {$texts{$_} && push(@res, '', "License: $_", $texts{$_})} 
+	keys %licenses;
+    } else {
+	push @incomplete, 'No licensing information found'; 
+    }
 
-	if ($incomplete) {
-	    _warn_incomplete_copyright($incomplete)
-	}
+    $fh->print(join("\n", @res, ''));
+    $fh->close;
+
+    _warn_incomplete_copyright(join("\n", @incomplete)) if @incomplete;
 }
 
 sub create_readme {
@@ -1219,7 +1314,7 @@ this information; however, if you intend to upload this package to Debian
 complete copyright information.
 
 The causes for this warning are:
-', @_;
+', @_,"\n";
 }
 
 sub _file_r {
@@ -1322,7 +1417,7 @@ Useful when preparing a package for the Debian Perl Group
 L<http://pkg-perl.alioth.debian.org>.
 
 Sets C<Maintainer>, C<Uploaders>, C<Vcs-Svn> and C<Vcs-Browser> fields in
-debian/control accordingly.
+debian/control accordingly, and sets packaging-related licensing to GPLv2.
 
 =item B<--cpan-mirror> I<MIRROR>
 
