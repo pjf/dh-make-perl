@@ -1126,7 +1126,7 @@ sub create_copyright {
 	    );
 
 	# Pre-mangle the copyright information for the common similar cases
-	$mangle_cprt = $copyright;
+	$mangle_cprt = $copyright || ''; # avoid warning
 	$mangle_cprt =~ s/GENERAL PUBLIC LICENSE/GPL/g;
 
 	# Of course, more licenses (i.e. LGPL, BSD-like, Public
