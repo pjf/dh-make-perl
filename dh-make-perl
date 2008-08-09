@@ -148,6 +148,15 @@ $opts{exclude} = '(?:\/|^)(?:CVS|\.svn)\/' if (!defined $opts{exclude} or
 
 $arch = $opts{arch} if defined $opts{arch};
 
+if (defined $opts{e}) {
+  $email = $opts{e};
+} elsif (defined $opts{email}) {
+  $email = $opts{email};
+} else {
+  $email = '';
+}
+$maintainer = get_maintainer($email);
+
 if ( $opts{refresh} )
 {
     print "Engaging refresh mode\n";
@@ -162,12 +171,15 @@ if ( $opts{refresh} )
     print "Found changelog: $changelog\n" if defined $changelog;
     print "Found docs: @docs\n";
     print "Found examples: @examples\n" if @examples;
+    copy("$debiandir/rules", "$debiandir/rules.bak");
     create_rules("$debiandir/rules");
     fix_rules(
         "$debiandir/rules",
         (defined $changelog ? $changelog : ''),
         \@docs, \@examples,
     );
+    copy("$debiandir/copyright", "$debiandir/copyright.bak");
+    create_copyright("$debiandir/copyright");
     print "--- Done\n";
     exit 0;
 }
@@ -177,14 +189,6 @@ my $tarball = setup_dir();
 $meta = process_meta("$maindir/META.yml") if (-f "$maindir/META.yml");
 findbin_fix();
 
-if (defined $opts{e}) {
-  $email = $opts{e};
-} elsif (defined $opts{email}) {
-  $email = $opts{email};
-} else {
-  $email = '';
-}
-$maintainer = get_maintainer($email);
 
 if (defined $opts{desc}) {
   $desc = $opts{desc};
