@@ -1,0 +1,32 @@
+#!/usr/bin/make -f
+
+USES_QUILT := $(shell if [ -f $(CURDIR)/debian/patches/series ]; then echo yes; else echo no; fi)
+ifeq ($(USES_QUILT),yes)
+	include /usr/share/quilt/quilt.make
+
+	PATCH_TARGET := $(QUILT_STAMPFN)
+	UNPATCH_TARGET := unpatch
+endif
+
+build: build-stamp
+build-stamp: $(PATCH_TARGET)
+	dh build
+	touch $@
+
+clean: $(UNPATCH_TARGET)
+	dh $@
+
+install: install-stamp
+install-stamp: build-stamp
+	dh install
+	touch $@
+
+binary-arch: install
+	dh $@
+
+binary-indep: install
+	dh $@
+
+binary: binary-arch binary-indep
+
+.PHONY: binary binary-arch binary-indep install clean build
