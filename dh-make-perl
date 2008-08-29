@@ -713,7 +713,7 @@ sub extract_examples {
 	$dir .= '/' unless $dir =~ m(/$);
 	find(sub {
 		push (@examples, substr($File::Find::name, length($dir)) . '/*')
-			if (/^(examples|eg|samples?)$/i and (! $opts{exclude} or $File::Find::name !~ /$opts{exclude}/)) ;
+			if (/^(examples?|eg|samples?)$/i and (! $opts{exclude} or $File::Find::name !~ /$opts{exclude}/)) ;
 	}, $dir);
 }
 
