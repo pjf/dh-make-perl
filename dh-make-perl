@@ -1082,9 +1082,9 @@ sub create_copyright {
     # boilerplate-generated modules.
     #
     # We go over the most common combinations only
-    if ($meta->{license} or $copyright) {
-	my (%texts, %licenses, $mangle_cprt);
-	%texts = ('Artistic' => 
+
+    my (%texts, %licenses);
+        %texts = ('Artistic' => 
 "    This program is free software; you can redistribute it and/or modify\n".
 "    it under the terms of the Artistic License, which comes with Perl.\n".
 "    On Debian GNU/Linux systems, the complete text of the Artistic License\n".
@@ -1127,8 +1127,10 @@ sub create_copyright {
 "    If this module conforms to a commonly used license, please report this\n".
 "    as a bug in dh-make-perl. In any case, please find the proper license\n".
 "    and fix this file!"
-	    );
+	);
 
+    if ($meta->{license} or $copyright) {
+	my $mangle_cprt;
 	# Pre-mangle the copyright information for the common similar cases
 	$mangle_cprt = $copyright || ''; # avoid warning
 	$mangle_cprt =~ s/GENERAL PUBLIC LICENSE/GPL/g;
@@ -1183,6 +1185,16 @@ sub create_copyright {
 	map {$texts{$_} && push(@res, '', "License: $_", $texts{$_})} 
 	keys %licenses;
     } else {
+	push @res, "License: ";
+
+	# debian/* again
+	$licenses{'Artistic'} = $licenses{'GPL-1+'} = 1;
+	$year = (localtime)[5]+1900;
+	push(@res, "", "Files: debian/*", "Copyright: $year, $maintainer");
+	push @res, "License: ". join(' | ', keys %licenses);
+	map {$texts{$_} && push(@res, '', "License: $_", $texts{$_})} 
+	keys %licenses;
+
 	push @incomplete, 'No licensing information found'; 
     }
 
