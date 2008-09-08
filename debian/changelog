@@ -11,7 +11,7 @@ dh-make-perl (0.49) UNRELEASED; urgency=low
   * "--refresh" also re-creates debian/copyright and makes backups of both
     debian/rules and debian/copyright.
   * Look for 'example' as well as for 'examples'.
-  * Complete creation of debian/copyright skeletion even if no license is
+  * Complete creation of debian/copyright skeleton even if no license is
     found.
 
  -- Gunnar Wolf <gwolf@debian.org>  Thu, 07 Aug 2008 15:49:12 -0500
