@@ -1175,28 +1175,20 @@ sub create_copyright {
 
 	push @res, "License: " . join(' | ', keys %licenses);
 
-	# debian/* files information - We default to the module being
-	# licensed as the superset of the module and Perl itself.
-	$licenses{'Artistic'} = $licenses{'GPL-1+'} = 1;
-	$year = (localtime)[5]+1900;
-	push(@res, "", "Files: debian/*", "Copyright: $year, $maintainer");
-	push @res, "License: ". join(' | ', keys %licenses);
-
-	map {$texts{$_} && push(@res, '', "License: $_", $texts{$_})} 
-	keys %licenses;
     } else {
 	push @res, "License: ";
-
-	# debian/* again
-	$licenses{'Artistic'} = $licenses{'GPL-1+'} = 1;
-	$year = (localtime)[5]+1900;
-	push(@res, "", "Files: debian/*", "Copyright: $year, $maintainer");
-	push @res, "License: ". join(' | ', keys %licenses);
-	map {$texts{$_} && push(@res, '', "License: $_", $texts{$_})} 
-	keys %licenses;
-
 	push @incomplete, 'No licensing information found'; 
     }
+
+    # debian/* files information - We default to the module being
+    # licensed as the superset of the module and Perl itself.
+    $licenses{'Artistic'} = $licenses{'GPL-1+'} = 1;
+    $year = (localtime)[5]+1900;
+    push(@res, "", "Files: debian/*", "Copyright: $year, $maintainer");
+    push @res, "License: ". join(' | ', keys %licenses);
+
+    map {$texts{$_} && push(@res, '', "License: $_", $texts{$_})} 
+    keys %licenses;
 
     $fh->print(join("\n", @res, ''));
     $fh->close;
