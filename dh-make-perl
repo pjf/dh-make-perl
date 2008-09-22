@@ -98,7 +98,7 @@ $depends = '${perl:Depends}';
 # (according to dh_perl)
 # if the module has stricter requirements, this build-dependency
 # is replaced below by calling substitute_perl_dependency
-$min_perl_version = '5.6.10-12';
+$min_perl_version = '5.6.0-12';
 $bdependsi = "perl (>= $min_perl_version)";
 $arch = 'all';
 $date = email_date(time);
