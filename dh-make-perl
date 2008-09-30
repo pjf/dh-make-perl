@@ -208,6 +208,11 @@ unless (defined $opts{version}) {
 }
 
 move ($tarball, dirname($tarball) . "/${pkgname}_${version}.orig.tar.gz") if ($tarball && $tarball =~ /(?:\.tar\.gz|\.tgz)$/);
+
+# fail before further inspection of the source
+# $debiandir is set by extract_basic() above
+-d $debiandir && die "The directory $debiandir is already present and I won't overwrite it: remove it yourself.\n";
+
 $module_build = (-f "$maindir/Build.PL") ? "Module-Build" : "MakeMaker";
 extract_changelog($maindir);
 extract_docs($maindir);
@@ -240,7 +245,6 @@ print "Using maintainer: $maintainer\n";
 print "Found changelog: $changelog\n" if defined $changelog;
 print "Found docs: @docs\n";
 print "Found examples: @examples\n" if @examples;
--d $debiandir && die "The directory $debiandir is already present and I won't overwrite it: remove it yourself.\n";
 # start writing out the data
 mkdir ($debiandir, 0755) || die "Cannot create $debiandir dir: $!\n";
 create_control("$debiandir/control");

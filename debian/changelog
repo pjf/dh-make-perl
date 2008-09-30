@@ -15,6 +15,9 @@ dh-make-perl (0.49) UNRELEASED; urgency=low
     found.
   * Fix typo in minimum Perl version number, thanks to Niko Tyni for spotting.
     Closes: #499730
+  * Check for an existing ./debian directory earlier, there's no use in
+    collecting all the information if we `die' anyway; thanks to Mark Lawrence
+    for the bug report (closes: #500685).
 
  -- Gunnar Wolf <gwolf@debian.org>  Thu, 07 Aug 2008 15:49:12 -0500
 
