@@ -1,0 +1,28 @@
+Source: dh-make-perl
+Section: devel
+Priority: optional
+Build-Depends: debhelper (>= 5)
+Build-Depends-Indep: perl
+Maintainer: Debian Perl Group <pkg-perl-maintainers@lists.alioth.debian.org>
+Uploaders: Gunnar Wolf <gwolf@debian.org>, Wolfgang Schemmel <debian@37.org>,
+ Christopher Sacca <csacca@thecsl.org>,
+ Damyan Ivanov <dmn@debian.org>, gregor herrmann <gregoa@debian.org>,
+ David Paleino <d.paleino@gmail.com>, 
+ Oliver Gorwits <oliver.gorwits@oucs.ox.ac.uk>
+Standards-Version: 3.8.0
+Vcs-Svn: svn://svn.debian.org/pkg-perl/trunk/dh-make-perl/
+Vcs-Browser: http://svn.debian.org/viewsvn/pkg-perl/trunk/dh-make-perl/
+
+Package: dh-make-perl
+Architecture: all
+Depends: debhelper (>= 4.0.2), libpod-parser-perl, ${perl:Depends}, make,
+ dpkg-dev, fakeroot, ${misc:Depends}, libyaml-perl,  libmodule-depends-perl,
+ libwww-mechanize-perl, libemail-date-format-perl
+Recommends: apt-file (>= 2.1.0), libmodule-build-perl
+Description: Create Debian packages from perl modules
+ dh-make-perl will create the files required to build a Debian source
+ package out of a perl package.  This works for most simple packages
+ and is also useful for getting started with packaging perl modules.
+ Given a perl package name, it can also automatically download it from
+ CPAN.
+
