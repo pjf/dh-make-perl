@@ -5,6 +5,10 @@ dh-make-perl (0.49) UNRELEASED; urgency=low
   * Make parentheses around module name optional in the Module::Install-using
     Makefile.PL. Closes: #493652 -- Fails to detect name
     Thanks to Christ West (Faux) for the report and the patch
+  * Make --depends and similar options to add packages to dependencies instead
+    of replacing the detected dependecy lists.
+    Closes: #487850 -- allow adding, not overwriting dependencies with
+                       --depends and friends
 
   [ Gunnar Wolf ]
   * Now creates machine-parsable debian/copyright files (cf.

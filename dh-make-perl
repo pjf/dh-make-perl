@@ -218,21 +218,22 @@ extract_changelog($maindir);
 extract_docs($maindir);
 extract_examples($maindir);
 
-if (defined $opts{bdepends}) {
-    $bdepends = $opts{bdepends};
-} else {
-    $bdepends .= ', libmodule-build-perl' if ($module_build eq "Module-Build");
-}
-$bdependsi = $opts{bdependsi} if defined $opts{bdependsi};
+$bdepends .= ', libmodule-build-perl' if ($module_build eq "Module-Build");
+$bdepends = join(', ', $bdepends||(), $opts{bdepends}||());
 
-if (defined $opts{depends}) {
-    $depends = $opts{depends};
-} else {
-    $depends .= ', ${shlibs:Depends}' if $arch eq 'any';
-    $depends .= ', ${misc:Depends}';
-    my $extradeps = extract_depends($maindir, $meta);
-    $depends .= ( $extradeps ? ", $extradeps" : '' );
-}
+$bdependsi = join(', ', $bdependsi||(), $opts{bdependsi}||());
+
+$depends .= ', ${shlibs:Depends}' if $arch eq 'any';
+$depends .= ', ${misc:Depends}';
+my $extradeps = extract_depends($maindir, $meta);
+$depends .= ( $extradeps ? ", $extradeps" : '' );
+
+$depends = join(
+    ', ',
+    $depends||(),
+    $opts{depends}||(),
+    $extradeps||(),
+);
 
 apply_overrides();
 
