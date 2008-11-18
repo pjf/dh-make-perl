@@ -557,11 +557,11 @@ sub extract_name_ver_from_makefile {
 	    $name = $4;
 	} elsif ($file =~ /name
 		 \s*
-		 \(
+		 \(?
 		     ([\'\"]?)
 		         (\S+)
 		     \1
-		 \);/xs) {
+		 \)?;/xs) {
 	    # Module::Install syntax
 	    $name = $2;
 	}

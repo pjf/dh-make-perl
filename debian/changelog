@@ -2,6 +2,9 @@ dh-make-perl (0.49) UNRELEASED; urgency=low
 
   [ Damyan Ivanov ]
   * Default debhelper level on generated packages is 7
+  * Make parentheses around module name optional in the Module::Install-using
+    Makefile.PL. Closes: #493652 -- Fails to detect name
+    Thanks to Christ West (Faux) for the report and the patch
 
   [ Gunnar Wolf ]
   * Now creates machine-parsable debian/copyright files (cf.
