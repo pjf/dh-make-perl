@@ -777,8 +777,6 @@ sub extract_depends {
             warn "Alternatively, including a META.yml file with dependencies\n" .
             "should allow discovery even for Module::Install modules. \n";
             warn '='x70,"\n";
-
-            exit 1;
         }
     }
 

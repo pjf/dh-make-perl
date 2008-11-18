@@ -9,6 +9,7 @@ dh-make-perl (0.49) UNRELEASED; urgency=low
     of replacing the detected dependecy lists.
     Closes: #487850 -- allow adding, not overwriting dependencies with
                        --depends and friends
+  * Do not bail out when unable to determine dependencies
 
   [ Gunnar Wolf ]
   * Now creates machine-parsable debian/copyright files (cf.
