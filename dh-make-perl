@@ -1132,7 +1132,7 @@ sub create_copyright {
 "    and fix this file!"
 	);
 
-    if ($meta->{license} or $copyright) {
+    if ($meta and $meta->{license} or $copyright) {
 	my $mangle_cprt;
 	# Pre-mangle the copyright information for the common similar cases
 	$mangle_cprt = $copyright || ''; # avoid warning
@@ -1143,8 +1143,8 @@ sub create_copyright {
 	# mind that many licenses are not meant to be used as
 	# templates (i.e. you must add the author name and some
 	# information within the licensing text as such).
-	if ($meta && $meta->{license} =~ /perl/i or
-	    $mangle_cprt && $mangle_cprt =~ /terms\s*as\s*Perl\s*itself/is) {
+	if ($meta and $meta->{license} and $meta->{license} =~ /perl/i or
+	    $mangle_cprt =~ /terms\s*as\s*Perl\s*itself/is) {
 	    push @res, "License-Alias: Perl";
 	    $licenses{'GPL-1+'} = 1;
 	    $licenses{'Artistic'} = 1;
