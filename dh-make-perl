@@ -161,6 +161,13 @@ if ( $opts{refresh} )
 {
     print "Engaging refresh mode\n";
     $maindir='.';
+
+    die "debian/rules.bak already exists. Aborting!\n"
+    if -e "debian/rules.bak";
+
+    die "debian/copyright.bak already exists. Aborting!\n"
+    if -e "debian/copyright.bak";
+
     $meta = process_meta("$maindir/META.yml") if (-f "$maindir/META.yml"); # package name
     ($pkgname, $version) = extract_basic();  # also detects arch-dep package
     $module_build = (-f "$maindir/Build.PL") ? "Module-Build" : "MakeMaker";
