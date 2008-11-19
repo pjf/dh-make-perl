@@ -1,3 +1,10 @@
+dh-make-perl (0.50) UNRELEASED; urgency=low
+
+  * Replace 'This module' with the real module name in the created long
+    description and wrap the description to a sane width (closes: #506071).
+
+ -- gregor herrmann <gregoa@debian.org>  Wed, 19 Nov 2008 18:52:03 +0100
+
 dh-make-perl (0.49) unstable; urgency=low
 
   [ Damyan Ivanov ]

@@ -11,6 +11,7 @@ use Cwd;
 use CPAN;
 use Module::Depends::Intrusive;
 use Email::Date::Format qw(email_date);
+use Text::Wrap;
 use strict;
 
 # TODO: 
@@ -645,7 +646,7 @@ sub extract_name_ver_from_makefile {
 }
 
 sub extract_desc {
-        my ($file, $parser);
+        my ($file, $parser, $modulename);
 	$file = shift;
 	$parser = new MyPod;
 	return unless -f $file;
@@ -674,6 +675,11 @@ sub extract_desc {
 		$longdesc = $parser->get('DESCRIPTION')
 			|| $parser->get('DETAILS')
 			|| $desc;
+		($modulename = $perlname) =~ s/-/::/g;
+		$longdesc =~ s/This module/$modulename/;
+		
+		local($Text::Wrap::columns) = 78;
+		$longdesc = fill("", "", $longdesc);
 	}
 	if (defined $longdesc && $longdesc !~ /^$/) {
 		$longdesc =~ s/^\s+//s;
