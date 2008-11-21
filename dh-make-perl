@@ -800,7 +800,37 @@ sub extract_depends {
 	}
 
 	if (`which apt-file`) {
-	    $has_apt_file = 1;
+            my %apt_contents;
+            my $archspec = `dpkg --print-architecture`; chomp($archspec);
+            warn "Parsing apt-file Contents...\n";
+            for( glob "/var/cache/apt/apt-file/*_Contents-$archspec.gz" )
+            {
+                my $f = IO::Uncompress::Gunzip->new($_);
+                my $capturing = 0;
+                while( defined($_ = $f->getline) )
+                {
+                    if( $capturing )
+                    {
+                        my($file, $packages) = split(/\s+/);
+                        next unless $file =~ s{
+                            ^usr/
+                            (?:share|lib)/
+                            (?:perl\d+/             # perl5/
+                             | perl/(?:\d[\d.]+)/   # or perl.5.10/
+                            )
+                         }{}x;
+                        $apt_contents{$file} = $packages;
+                        # $packages is a comma-separated list of
+                        # section/package items. We'll parse it when a file
+                        # matches
+                    }
+                    else
+                    {
+                        $capturing = 1 if /^FILE\s+LOCATION/;
+                    }
+                }
+            }
+	    $has_apt_file = scalar(keys(%apt_contents));
 	    foreach my $module (@uses) {
 		my (@rawsearch, @search, $ls, $ver, $re, $mod);
 
@@ -810,31 +840,21 @@ sub extract_depends {
 		}
 
 		$mod = $module;
-		print "Searching for package containing $module using apt-file.\n";
 		$module =~ s|::|/|g;
 
-		# Regex's to search the return of apt-file to find the right pkg
-		$ls  = '(?:lib|share)';
-		$ver = '\d+(\.\d+)+';
-		$re  = "usr/(?:$ls/perl/$ver|$ls/perl5)/$module\\.pm";
-
-		@rawsearch = `apt-file search -x '$re'`;
-
+                my $matches = $apt_contents{"$module.pm"};
 		# rank non -perl packages lower
-		@search = sort {
+                my @matches = sort {
 			if ($a !~ /-perl: /)    { return 1; }
 			elsif ($b !~ /-perl: /) { return -1; }
 			else                    { return $a cmp $b; } # or 0?
-		} @rawsearch;
-		
-		for (@search) {
-		    # apt-file output
-		    # package-name: path/to/perl/module.pm
-		    chomp; 
-		    my ($p, $f) = split / /, $_;
-		    chop($p); #Get rid of the ":"
-		    if ($f =~ /$re/ && ! 
-			grep { $_ eq $p } @deps, split(/,/,@stdmodules)) {
+		} map { s{.+/}{}; $_ } split(/,/, $matches);
+
+                # use the first package that is not already in @deps
+                # or @stdmodules
+		for my $p(@matches) {
+		    if ( !grep { $_ eq $p } @deps, split(/,/,@stdmodules))
+                    {
 			if (exists $dep_hash{$mod}) {
                             my $v = $dep_hash{$mod};
                             $v =~ s/^v//;   # strip leading 'v' from version
@@ -847,7 +867,7 @@ sub extract_depends {
 		    }
 		}
 			
-		unless (@search) {
+		unless (@matches) {
 		    $module =~ s|/|::|g;
 		    push @not_debs, $module;
 		}

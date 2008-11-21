@@ -1,7 +1,17 @@
 dh-make-perl (0.50) UNRELEASED; urgency=low
 
+    WORK IN PRPOGRESS
+      the replacement of apt-file invocation with parsing Contents
+      needs to be sped up by using a cache of the parsed content
+                                                        -- dam
+
+  [ gregor herrmann ]
   * Replace 'This module' with the real module name in the created long
     description and wrap the description to a sane width (closes: #506071).
+
+  [ Damyan Ivanov ]
+  * replace parsing of 'apt-file search' output with parsing the Contents
+    files in /var/cache/apt/apt-file
 
  -- gregor herrmann <gregoa@debian.org>  Wed, 19 Nov 2008 18:52:03 +0100
 
