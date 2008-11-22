@@ -8,6 +8,7 @@ dh-make-perl (0.50) UNRELEASED; urgency=low
   * replace parsing of 'apt-file search' output with parsing the Contents
     files in /var/cache/apt/apt-file and cache the result.
     Closes: #506075 -- optimize apt-file invocations
+  * wrap generated (build-)dependency fields. Thanks to Gregor Herrmann
 
  -- gregor herrmann <gregoa@debian.org>  Wed, 19 Nov 2008 18:52:03 +0100
 

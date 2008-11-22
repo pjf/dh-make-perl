@@ -1063,8 +1063,10 @@ sub create_control {
 	$fh->print("Source: $srcname\n");
 	$fh->print("Section: $section\n");
 	$fh->print("Priority: $priority\n");
-	$fh->print("Build-Depends: $bdepends\n") if $bdepends;
-	$fh->print("Build-Depends-Indep: $bdependsi\n") if $bdependsi;
+        local $Text::Wrap::break = ', ';
+        local $Text::Wrap::separator = ",\n";
+	$fh->print(wrap('', ' ', "Build-Depends: $bdepends\n")) if $bdepends;
+	$fh->print(wrap('', ' ', "Build-Depends-Indep: $bdependsi\n")) if $bdependsi;
 	$fh->print($extrasfields) if defined $extrasfields;
         if( $opts{'pkg-perl'} )
         {
@@ -1084,7 +1086,7 @@ sub create_control {
 	$fh->print("\n");
 	$fh->print("Package: $pkgname\n");
 	$fh->print("Architecture: $arch\n");
-	$fh->print("Depends: $depends\n") if $depends;
+	$fh->print(wrap('', ' ', "Depends: $depends\n")) if $depends;
 	$fh->print($extrapfields) if defined $extrapfields;
 	$fh->print("Description: $desc\n$longdesc\n .\n This description was automagically extracted from the module by dh-make-perl.\n");
 	$fh->close;
