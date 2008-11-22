@@ -234,7 +234,6 @@ $bdependsi = join(', ', $bdependsi||(), $opts{bdependsi}||());
 $depends .= ', ${shlibs:Depends}' if $arch eq 'any';
 $depends .= ', ${misc:Depends}';
 my $extradeps = extract_depends($maindir, $meta);
-$depends .= ( $extradeps ? ", $extradeps" : '' );
 
 $depends = join(
     ', ',
