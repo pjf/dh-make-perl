@@ -728,7 +728,7 @@ sub extract_docs {
 
 sub extract_examples {
 	my ($dir) = shift;
-	$dir .= '/' unless $dir =~ m(/$);
+	$dir .= '/' unless $dir =~ m{/$};
 	find(sub {
 		push (@examples, substr($File::Find::name, length($dir)) . '/*')
 			if (/^(examples?|eg|samples?)$/i and (! $opts{exclude} or $File::Find::name !~ /$opts{exclude}/)) ;
@@ -751,6 +751,29 @@ sub run_depends {
     my $error = $mod_dep->error();
     die "Error: $error\n" if $error;
     return %dep_hash;
+}
+
+use Storable;
+sub read_cache()
+{
+    my $cache;
+    if( -r "$homedir/Contents.cache" )
+    {
+        $cache = eval{ Storable::retrieve("$homedir/Contents.cache") };
+        undef($cache) unless ref($cache) and ref($cache) eq 'HASH';
+    }
+
+    return $cache;
+}
+
+sub store_cache($)
+{
+    my $cache = shift;
+    mkdir $homedir or die "Error creating '$homedir': $!\n"
+    unless -d $homedir;
+
+    Storable::store( $cache, "$homedir/Contents.cache.new" );
+    rename( "$homedir/Contents.cache.new", "$homedir/Contents.cache" );
 }
 
 sub extract_depends {
@@ -800,55 +823,88 @@ sub extract_depends {
 	}
 
 	if (`which apt-file`) {
-            my %apt_contents;
             my $archspec = `dpkg --print-architecture`; chomp($archspec);
-            warn "Parsing apt-file Contents...\n";
-            for( glob "/var/cache/apt/apt-file/*_Contents-$archspec.gz" )
+
+            my $cache = read_cache();
+            if( $cache->{stamp} )
             {
-                my $f = IO::Uncompress::Gunzip->new($_);
-                my $capturing = 0;
-                while( defined($_ = $f->getline) )
+                my @contents_files;
+                for( glob "/var/cache/apt/apt-file/*_Contents-$archspec.gz" )
                 {
-                    if( $capturing )
+                    push @contents_files, $_;
+                    if( (stat($_))[9] > $cache->{stamp} )
                     {
-                        my($file, $packages) = split(/\s+/);
-                        next unless $file =~ s{
-                            ^usr/
-                            (?:share|lib)/
-                            (?:perl\d+/             # perl5/
-                             | perl/(?:\d[\d.]+)/   # or perl.5.10/
-                            )
-                         }{}x;
-                        $apt_contents{$file} = $packages;
-                        # $packages is a comma-separated list of
-                        # section/package items. We'll parse it when a file
-                        # matches
+                        undef($cache->{stamp});
+                        last;
                     }
-                    else
+                }
+
+                @contents_files = sort @contents_files;
+
+                undef($cache->{stamp})
+                unless join('><', @contents_files) eq join('><', @{$cache->{contents_files}});
+            }
+
+            unless( $cache->{stamp} )
+            {
+                warn "Parsing apt-file Contents...\n";
+                $cache->{stamp} = time;
+                $cache->{contents_files} = [];
+                $cache->{apt_contents} = {};
+                for( glob "/var/cache/apt/apt-file/*_Contents-$archspec.gz" )
+                {
+                    push @{ $cache->{contents_files} }, $_;
+                    my $f = IO::Uncompress::Gunzip->new($_);
+                    my $capturing = 0;
+                    while( defined($_ = $f->getline) )
                     {
-                        $capturing = 1 if /^FILE\s+LOCATION/;
+                        if( $capturing )
+                        {
+                            my($file, $packages) = split(/\s+/);
+                            next unless $file =~ s{
+                                ^usr/
+                                (?:share|lib)/
+                                (?:perl\d+/             # perl5/
+                                 | perl/(?:\d[\d.]+)/   # or perl.5.10/
+                                )
+                             }{}x;
+                            $cache->{apt_contents}{$file} = $packages;
+                            # $packages is a comma-separated list of
+                            # section/package items. We'll parse it when a file
+                            # matches. Otherwise we'd parse thousands of entries,
+                            # while checking only a couple
+                        }
+                        else
+                        {
+                            $capturing = 1 if /^FILE\s+LOCATION/;
+                        }
                     }
                 }
             }
-	    $has_apt_file = scalar(keys(%apt_contents));
-	    foreach my $module (@uses) {
-		my (@rawsearch, @search, $ls, $ver, $re, $mod);
+            else
+            {
+                warn "Using cached Contents from ".localtime($cache->{stamp})."\n";
+            }
 
+            $has_apt_file = scalar(keys(%{$cache->{apt_contents}}));
+            store_cache($cache) if $has_apt_file;
+
+	    foreach my $module (@uses) {
 		if ($module eq 'perl') {
 		    substitute_perl_dependency($dep_hash{perl});
 		    next;
 		}
 
-		$mod = $module;
+		my $mod = $module;
 		$module =~ s|::|/|g;
 
-                my $matches = $apt_contents{"$module.pm"};
+                my $matches = $cache->{apt_contents}{"$module.pm"};
 		# rank non -perl packages lower
                 my @matches = sort {
 			if ($a !~ /-perl: /)    { return 1; }
 			elsif ($b !~ /-perl: /) { return -1; }
 			else                    { return $a cmp $b; } # or 0?
-		} map { s{.+/}{}; $_ } split(/,/, $matches);
+		} map { s{.+/}{}; $_ } split(/,/, $matches) if $matches;
 
                 # use the first package that is not already in @deps
                 # or @stdmodules
@@ -868,8 +924,7 @@ sub extract_depends {
 		}
 			
 		unless (@matches) {
-		    $module =~ s|/|::|g;
-		    push @not_debs, $module;
+		    push @not_debs, $mod;
 		}
 	    }
 	} elsif ( $opts{requiredeps} ) {
@@ -1692,3 +1747,4 @@ Patches from:
 
 =cut
 
+# vim: set ts=8 sw=4 et :
