@@ -1,4 +1,4 @@
-dh-make-perl (0.50) UNRELEASED; urgency=low
+dh-make-perl (0.50) unstable; urgency=low
 
   [ gregor herrmann ]
   * Replace 'This module' with the real module name in the created long
@@ -12,7 +12,7 @@ dh-make-perl (0.50) UNRELEASED; urgency=low
   * fix a bug introduced in the fix of #487850 causing duplication of detected
     dependencies
 
- -- gregor herrmann <gregoa@debian.org>  Wed, 19 Nov 2008 18:52:03 +0100
+ -- Damyan Ivanov <dmn@debian.org>  Sat, 22 Nov 2008 15:11:52 +0200
 
 dh-make-perl (0.49) unstable; urgency=low
 
