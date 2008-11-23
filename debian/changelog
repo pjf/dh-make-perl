@@ -1,3 +1,10 @@
+dh-make-perl (0.51) UNRELEASED; urgency=low
+
+  * Handle --desc option before --refresh to avoid uninitialized $desc
+    variable.
+
+ -- gregor herrmann <gregoa@debian.org>  Sun, 23 Nov 2008 16:51:29 +0100
+
 dh-make-perl (0.50) unstable; urgency=low
 
   [ gregor herrmann ]

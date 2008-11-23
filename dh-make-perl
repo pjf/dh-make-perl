@@ -158,6 +158,12 @@ if (defined $opts{e}) {
 }
 $maintainer = get_maintainer($email);
 
+if (defined $opts{desc}) {
+  $desc = $opts{desc};
+} else {
+  $desc = '';
+}
+
 if ( $opts{refresh} )
 {
     print "Engaging refresh mode\n";
@@ -197,12 +203,6 @@ my $tarball = setup_dir();
 $meta = process_meta("$maindir/META.yml") if (-f "$maindir/META.yml");
 findbin_fix();
 
-
-if (defined $opts{desc}) {
-  $desc = $opts{desc};
-} else {
-  $desc = '';
-}
 ($pkgname, $version) = extract_basic();
 if (defined $opts{p}) {
   $pkgname = $opts{p};
