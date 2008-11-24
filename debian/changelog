@@ -1,7 +1,13 @@
 dh-make-perl (0.51) UNRELEASED; urgency=low
 
+  [ gregor herrmann ]
   * Handle --desc option before --refresh to avoid uninitialized $desc
     variable.
+
+  [ Damyan Ivanov ]
+  * Apply two patches from Paul Fenwick reformatting the whitespace of
+    dh-make-perl. Hopefully this makes the code a bit easier for people not
+    used to it.
 
  -- gregor herrmann <gregoa@debian.org>  Sun, 23 Nov 2008 16:51:29 +0100
 
