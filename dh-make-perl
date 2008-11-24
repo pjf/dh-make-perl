@@ -179,6 +179,8 @@ else {
     $desc = '';
 }
 
+if ( $opts{refresh} )
+{
     print "Engaging refresh mode\n";
     $maindir = '.';
 
@@ -246,7 +248,6 @@ $bdepends = join( ', ', $bdepends||(), $opts{bdepends}||() );
 
 $bdependsi = join( ', ', $bdependsi||(), $opts{bdependsi}||() );
 
-else {
 $depends .= ', ${shlibs:Depends}' if $arch eq 'any';
 $depends .= ', ${misc:Depends}';
 my $extradeps = extract_depends( $maindir, $meta );
@@ -716,7 +717,7 @@ sub extract_name_ver_from_makefile {
 }
 
 sub extract_desc {
-    my ( $file, $parser );
+    my ( $file, $parser, $modulename );
     $file   = shift;
     $parser = new MyPod;
     return unless -f $file;
@@ -752,11 +753,11 @@ sub extract_desc {
             = $parser->get('DESCRIPTION')
             || $parser->get('DETAILS')
             || $desc;
-		($modulename = $perlname) =~ s/-/::/g;
-		$longdesc =~ s/This module/$modulename/;
-		
-		local($Text::Wrap::columns) = 78;
-		$longdesc = fill("", "", $longdesc);
+        ( $modulename = $perlname ) =~ s/-/::/g;
+        $longdesc =~ s/This module/$modulename/;
+
+        local($Text::Wrap::columns) = 78;
+        $longdesc = fill( "", "", $longdesc );
     }
     if ( defined $longdesc && $longdesc !~ /^$/ ) {
         $longdesc =~ s/^\s+//s;
@@ -1376,7 +1377,7 @@ sub create_copyright {
         # mind that many licenses are not meant to be used as
         # templates (i.e. you must add the author name and some
         # information within the licensing text as such).
-        if (   $meta && $meta->{license} =~ /perl/i
+        if (   $meta and $meta->{license} and $meta->{license} =~ /perl/i
             or $mangle_cprt =~ /terms\s*as\s*Perl\s*itself/is )
         {
             push @res, "License-Alias: Perl";
