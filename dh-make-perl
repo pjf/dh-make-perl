@@ -92,20 +92,22 @@ my (@stdmodules, $min_perl_version, $debstdversion, $priority, $section,
 our %overrides;
 
 $debstdversion = '3.8.0';
-$priority = 'optional';
-$section = 'perl';
-$depends = '${perl:Depends}';
+$priority      = 'optional';
+$section       = 'perl';
+$depends       = '${perl:Depends}';
+
 # 5.6.0-12 is where arch-indep modules are moved in /usr/share/perl5
 # (according to dh_perl)
 # if the module has stricter requirements, this build-dependency
 # is replaced below by calling substitute_perl_dependency
 $min_perl_version = '5.6.0-12';
+
 $bdependsi = "perl (>= $min_perl_version)";
-$arch = 'all';
-$date = email_date(time);
-$startdir = getcwd();
-$datadir = '/usr/share/dh-make-perl';
-$homedir = "$ENV{HOME}/.dh-make-perl";
+$arch      = 'all';
+$date      = email_date(time);
+$startdir  = getcwd();
+$datadir   = '/usr/share/dh-make-perl';
+$homedir   = "$ENV{HOME}/.dh-make-perl";
 
 my ($perlname, $maindir, $modulepm, $meta);
 my ($pkgname, $srcname, 
@@ -137,7 +139,7 @@ GetOptions(\%opts,
 	   'p=s', 'packagename=s', 'refresh|R', 'dh=i'
 ) or die usage_instructions();
 
-$bdepends = "debhelper (>= $opts{dh})";
+$bdepends   = "debhelper (>= $opts{dh})";
 @stdmodules = get_stdmodules();
 
 # Help requested? Nice, we can just die! Isn't it helpful?
@@ -150,11 +152,11 @@ $opts{exclude} = '(?:\/|^)(?:CVS|\.svn)\/' if (!defined $opts{exclude} or
 $arch = $opts{arch} if defined $opts{arch};
 
 if (defined $opts{e}) {
-  $email = $opts{e};
+    $email = $opts{e};
 } elsif (defined $opts{email}) {
-  $email = $opts{email};
+    $email = $opts{email};
 } else {
-  $email = '';
+    $email = '';
 }
 $maintainer = get_maintainer($email);
 
@@ -205,9 +207,9 @@ findbin_fix();
 
 ($pkgname, $version) = extract_basic();
 if (defined $opts{p}) {
-  $pkgname = $opts{p};
+    $pkgname = $opts{p};
 } elsif (defined $opts{packagename}) {
-  $pkgname = $opts{packagename};
+    $pkgname = $opts{packagename};
 }
 unless (defined $opts{version}) {
 	$pkgversion = $version . "-1";
