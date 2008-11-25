@@ -614,13 +614,16 @@ sub extract_name_ver_from_makefile {
         $name = $4;
     }
     elsif (
-        $file =~ /name
-		 \s*
-		 \(?
-		     ([\'\"]?)
-		         (\S+)
-		     \1
-		 \)?;/xs
+        $file =~ m{
+                        name
+                         \s*
+                         \(?                    # Optional open paren
+                             ([\'\"]?)          # Optional open quote
+                                 (\S+)          # Quoted name
+                             \1                 # Optional close quote
+                         \)?                    # Optional close paren
+                         \s*;
+                 }xs
         )
     {
 
