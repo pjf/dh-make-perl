@@ -660,10 +660,19 @@ sub extract_name_ver_from_makefile {
         $vfrom = $4;
 
     }
-    elsif ( $file =~ /version\((\S+)\)/s ) {
+    elsif ( 
+        $file =~ m{
+            \bversion\b\s*                  # The word version
+            \(?\s*                          # Optional open-parens
+            (['"]?)                         # Optional quotes
+            ([\d_.]+)                       # The actual version.
+            \1                              # Optional close-quotes
+            \s*\)?                          # Optional close-parens.
+        }sx 
+    ) {
 
         # Module::Install
-        $ver = $1;
+        $ver = $2;
     }
 
     $dir = dirname($makefile) || './';
