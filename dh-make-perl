@@ -118,6 +118,11 @@ $startdir  = getcwd();
 $datadir   = '/usr/share/dh-make-perl';
 $homedir   = "$ENV{HOME}/.dh-make-perl";
 
+# If we're being required rather than called as a main command, then
+# return now without doing any work.  This facilitates easier testing.
+
+return 1 if $0 ne __FILE__;
+
 my ( $perlname, $maindir, $modulepm, $meta );
 my ($pkgname, $srcname,
 
