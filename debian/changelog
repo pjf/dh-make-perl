@@ -1,4 +1,4 @@
-dh-make-perl (0.51) UNRELEASED; urgency=low
+dh-make-perl (0.52) UNRELEASED; urgency=low
 
   [ gregor herrmann ]
   * Handle --desc option before --refresh to avoid uninitialized $desc
@@ -8,8 +8,20 @@ dh-make-perl (0.51) UNRELEASED; urgency=low
   * Apply two patches from Paul Fenwick reformatting the whitespace of
     dh-make-perl. Hopefully this makes the code a bit easier for people not
     used to it.
+  * extract_depends: try Module::Depends first, ::Intrusive -- second
+  * avoid duplicate entries in dependency lists
+  * better output when searching for dependent packages
+  * Add Paul Fenwick to the 'Patched from' section
 
- -- gregor herrmann <gregoa@debian.org>  Sun, 23 Nov 2008 16:51:29 +0100
+  [ Paul Fenwick ]
+  * Setting the base for unit-testing:
+    + Simple patch to avoid doing work if we're being required and not run.
+    + Basic tests for extract_name_ver_from_autodie.
+  * Updated regexp to extract version from basic Module::Install.
+  * Updated extract_name_ver_from_makefile to handle M::I recommended
+    syntax.
+
+ -- Damyan Ivanov <dmn@debian.org>  Tue, 25 Nov 2008 10:31:48 +0200
 
 dh-make-perl (0.50) unstable; urgency=low
 
