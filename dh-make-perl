@@ -1035,7 +1035,7 @@ sub extract_depends {
                 if    ( $a !~ /-perl: / ) { return 1; }
                 elsif ( $b !~ /-perl: / ) { return -1; }
                 else                      { return $a cmp $b; }    # or 0?
-		} map { s{.+/}{}; $_ } split( /,/, $matches ) if $matches;
+            } map { s{.+/}{}; $_ } split( /,/, $matches ) if $matches;
 
             # use the first package that is not already in @deps
             # or @stdmodules
