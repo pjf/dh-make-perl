@@ -467,6 +467,18 @@ sub get_stdmodules {
 
 }
 
+sub is_core_module {
+    my $module = shift;
+
+    my $core = $Module::CoreList::version{$]}
+            || $Module::CoreList::version{$]+0};
+
+    $core
+        or die "Internal error: \$Module::CoreList::version{ $] } is empty";
+
+    return exists( $core->{$module} );
+}
+
 sub setup_dir {
     my ( $dist, $mod, $cpanversion, $tarball );
     $mod_cpan_version = '';
@@ -474,7 +486,7 @@ sub setup_dir {
         my ($new_maindir);
 
         # Is the module a core module?
-        if ( grep( /$opts{cpan}/, @stdmodules ) ) {
+        if ( is_core_module( $opts{cpan} ) ) {
             die "$opts{cpan} is a standard module.\n"
                 unless $opts{'core-ok'};
         }
@@ -1068,7 +1080,17 @@ sub extract_depends {
     }
 
     foreach my $module ( keys(%dep_hash) ) {
-        next if ( grep ( /^$module$/, @stdmodules ) );
+        if ( is_core_module($module) ) {
+            print "= $module is a core module\n";
+
+            # TODO
+            # see if there is a version requirement and if the core
+            # module satisfies it. If it does, see if previous perl
+            # releases satisfy it too and if needed, bump the perl
+            # dependency to the lowest version that contains module
+            # version satisfying the dependency
+            next;
+        }
 
         push @uses, $module;
     }
