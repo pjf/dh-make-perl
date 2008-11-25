@@ -886,31 +886,26 @@ sub store_cache($)
 #   libppi-perl, libppi-perl (>= 3.0), libarm-perl, libalpa-perl, libarm-perl (>= 2)
 # we want a clean list instead:
 #   libalpa-perl, libarm-perl (>= 2), libppi-perl (>= 3.0)
-sub prune_deps(@)
-{
+sub prune_deps(@) {
     my %deps;
-    for (@_)
-    {
+    for (@_) {
         my $p = $_->{name};
         my $v = exists( $_->{version} ) ? $_->{version} : undef;
-        if( exists $deps{$p} )
-        {
+        if ( exists $deps{$p} ) {
             my $cur_ver = $deps{$p};
 
             $deps{$p} = $v
-                if    defined($v)
-                  and not defined($cur_ver)
-                   or $AptPkg::Config::_config->system->versioning
-                      ->compare( $cur_ver, $v ) < 0;
+                if defined($v) and not defined($cur_ver)
+                    or $AptPkg::Config::_config->system->versioning->compare(
+                        $cur_ver, $v ) < 0;
         }
-        else
-        {
+        else {
             $deps{$p} = $v;
         }
 
     }
 
-    return map( { name=>$_, version=>$deps{$_} }, sort( keys(%deps) ) );
+    return map( { name => $_, version => $deps{$_} }, sort( keys(%deps) ) );
 }
 
 sub extract_depends {
@@ -932,7 +927,9 @@ sub extract_depends {
             . "Trying again with Module::Depends::Intrusive ... \n";
         warn '=' x 70, "\n";
 
-    eval { %dep_hash = run_depends( 'Module::Depends::Intrusive', $dir ); };
+        eval {
+            %dep_hash = run_depends( 'Module::Depends::Intrusive', $dir );
+        };
         if ($@) {
             warn '=' x 70, "\n";
             warn
