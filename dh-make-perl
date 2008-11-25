@@ -9,6 +9,7 @@ use User::pwent;
 use Getopt::Long;
 use Cwd;
 use CPAN;
+use Module::Depends;
 use Module::Depends::Intrusive;
 use Email::Date::Format qw(email_date);
 use Text::Wrap;
@@ -887,32 +888,28 @@ sub extract_depends {
 
     $dir .= '/' unless $dir =~ m/\/$/;
 
-    # try Module::Depends::Intrusive, but if that fails then
-    # fall back to Module::Depends.
+    # try Module::Depends, but if that fails then
+    # fall back to Module::Depends::Intrusive.
 
-    eval { %dep_hash = run_depends( 'Module::Depends::Intrusive', $dir ); };
+    eval { %dep_hash = run_depends( 'Module::Depends', $dir ); };
     if ($@) {
         warn '=' x 70, "\n";
-        warn "First attempt (Module::Depends::Intrusive) at a dependency\n"
-            . "check failed. Possible use of Module::Install ?\n"
-            . "Trying again with Module::Depends ... \n";
+        warn "First attempt (Module::Depends) at a dependency\n"
+            . "check failed. Missing/bad META.yml?\n"
+            . "Trying again with Module::Depends::Intrusive ... \n";
         warn '=' x 70, "\n";
 
-        eval { %dep_hash = run_depends( 'Module::Depends', $dir ); };
-
+    eval { %dep_hash = run_depends( 'Module::Depends::Intrusive', $dir ); };
         if ($@) {
             warn '=' x 70, "\n";
             warn
                 "Could not find the dependencies for the requested module.\n";
             warn "Generated error: $@";
 
-            warn "Please check if your module depends on Module::Install\n"
-                . "for its build process - Automatically finding its\n"
-                . "dependencies is unsupported, please specify them manually\n"
-                . "using the 'depends' option. \n";
-            warn
-                "Alternatively, including a META.yml file with dependencies\n"
-                . "should allow discovery even for Module::Install modules. \n";
+            warn "Please bug the module author to provide a proper META.yml\n"
+                . "file.\n"
+                . "Automatic find of dependencies failed. You may want to \n"
+                . "retry using the 'depends' option\n";
             warn '=' x 70, "\n";
         }
     }
