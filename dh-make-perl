@@ -1027,8 +1027,6 @@ sub extract_depends {
             }
 
             my $mod = $module;
-            print
-                "Searching for package containing $module using apt-file.\n";
             $module =~ s|::|/|g;
 
             my $matches = $cache->{apt_contents}{"$module.pm"};
@@ -1042,8 +1040,13 @@ sub extract_depends {
             # use the first package that is not already in @deps
             # or @stdmodules
             for my $p(@matches) {
-                if ( !grep { $_ eq $p } @deps, split(/,/,@stdmodules))
+                if ( grep { $_ eq $p } @deps, split( /,/, @stdmodules ) )
                 {
+                    print "= $mod is a core module\n";
+                }
+                else
+                {
+                    print "+ $mod is contained in $p\n";
                     if ( exists $dep_hash{$mod} ) {
                         my $v = $dep_hash{$mod};
                         $v =~ s/^v//;    # strip leading 'v' from version
@@ -1061,6 +1064,7 @@ sub extract_depends {
             }
 
             unless (@matches) {
+                print "- $mod not found in any package\n";
                 push @not_debs, $mod;
             }
         }
