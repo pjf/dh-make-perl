@@ -11,6 +11,7 @@ use Cwd;
 use CPAN;
 use Module::Depends::Intrusive;
 use Email::Date::Format qw(email_date);
+use Module::CoreList ();
 use strict;
 
 # TODO:
@@ -310,24 +311,17 @@ USAGE
 }
 
 sub get_stdmodules {
-    my ( $base_packages, @modules, $paths );
-    $base_packages = $opts{basepkgs} || 'perl,perl-base,perl-modules';
 
-   # We will check on all the base Perl packages for the modules they provide.
-   # To know which files we care for, we look at @INC - In a format easy to
-   # integrate into a regex
-    $paths = join( '|', @INC );
+    # Module::CoreList already knows our core modules, so we ask it.
+    # $] is our perl version.
 
-    for my $pkg ( split( /,/, $base_packages ) ) {
-        for my $file ( map { chomp; $_ } `dpkg -L $pkg` ) {
-            next unless $file =~ s!^(?:$paths)[\d\.]*/(.*).pm$!$1!x;
+    my @modules = keys %{ $Module::CoreList::version{ $] } };
 
-            $file =~ s!/!::!g;
-            push @modules, $file;
-        }
-    }
+    @modules
+        or die "Internal error: \$Module::CoreList::version{ $] } is empty";
 
-    return sort @modules;
+    return @modules;
+
 }
 
 sub setup_dir {
