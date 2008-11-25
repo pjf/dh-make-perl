@@ -13,6 +13,7 @@ use Module::Depends;
 use Module::Depends::Intrusive;
 use Email::Date::Format qw(email_date);
 use Text::Wrap;
+use AptPkg::Config;
 use strict;
 
 # TODO:
@@ -880,6 +881,38 @@ sub store_cache($)
     rename( "$homedir/Contents.cache.new", "$homedir/Contents.cache" );
 }
 
+# filter @deps to contain only one instance of each package
+# say we have te following list of dependencies:
+#   libppi-perl, libppi-perl (>= 3.0), libarm-perl, libalpa-perl, libarm-perl (>= 2)
+# we want a clean list instead:
+#   libalpa-perl, libarm-perl (>= 2), libppi-perl (>= 3.0)
+sub prune_deps(@)
+{
+    my %deps;
+    for (@_)
+    {
+        my $p = $_->{name};
+        my $v = exists( $_->{version} ) ? $_->{version} : undef;
+        if( exists $deps{$p} )
+        {
+            my $cur_ver = $deps{$p};
+
+            $deps{$p} = $v
+                if    defined($v)
+                  and not defined($cur_ver)
+                   or $AptPkg::Config::_config->system->versioning
+                      ->compare( $cur_ver, $v ) < 0;
+        }
+        else
+        {
+            $deps{$p} = $v;
+        }
+
+    }
+
+    return map( { name=>$_, version=>$deps{$_} }, sort( keys(%deps) ) );
+}
+
 sub extract_depends {
     my $dir  = shift;
     my $meta = shift;
@@ -1035,6 +1068,8 @@ sub extract_depends {
     elsif ( $opts{requiredeps} ) {
         die "--requiredeps was specified, but apt-file was not found\n";
     }
+
+    @deps = prune_deps(@deps);
 
     print "\n";
     print "Needs the following debian packages: "
