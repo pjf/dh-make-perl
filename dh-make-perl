@@ -612,13 +612,16 @@ sub extract_name_ver_from_makefile {
         $name = $4;
     }
     elsif (
-        $file =~ /name
-		 \s*
-		 \(
-		     ([\'\"]?)
-		         (\S+)
-		     \1
-		 \);/xs
+        $file =~ m{
+			name
+			 \s*
+			 \(?			# Optional open quote
+			     ([\'\"]?)
+				 (\S+)		# Quoted name
+			     \1
+			 \)?			# Optional close quote
+			 \s*;
+		 }xs
         )
     {
 
@@ -862,6 +865,7 @@ sub extract_depends {
     # fall back to Module::Depends.
 
     eval { %dep_hash = run_depends( 'Module::Depends::Intrusive', $dir ); };
+
     if ($@) {
         warn '=' x 70, "\n";
         warn "First attempt (Module::Depends::Intrusive) at a dependency\n"
