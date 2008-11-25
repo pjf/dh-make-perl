@@ -181,8 +181,7 @@ else {
     $desc = '';
 }
 
-if ( $opts{refresh} )
-{
+if ( $opts{refresh} ) {
     print "Engaging refresh mode\n";
     $maindir = '.';
 
@@ -216,7 +215,6 @@ my $tarball = setup_dir();
 $meta = process_meta("$maindir/META.yml") if ( -f "$maindir/META.yml" );
 findbin_fix();
 
-
 ( $pkgname, $version ) = extract_basic();
 if ( defined $opts{p} ) {
     $pkgname = $opts{p};
@@ -246,20 +244,16 @@ extract_docs($maindir);
 extract_examples($maindir);
 
 $bdepends .= ', libmodule-build-perl' if ( $module_build eq "Module-Build" );
-$bdepends = join( ', ', $bdepends||(), $opts{bdepends}||() );
+$bdepends = join( ', ', $bdepends || (), $opts{bdepends} || () );
 
-$bdependsi = join( ', ', $bdependsi||(), $opts{bdependsi}||() );
+$bdependsi = join( ', ', $bdependsi || (), $opts{bdependsi} || () );
 
 $depends .= ', ${shlibs:Depends}' if $arch eq 'any';
 $depends .= ', ${misc:Depends}';
 my $extradeps = extract_depends( $maindir, $meta );
 
-$depends = join(
-    ', ',
-    $depends||(),
-    $opts{depends}||(),
-    $extradeps||(),
-);
+$depends
+    = join( ', ', $depends || (), $opts{depends} || (), $extradeps || (), );
 
 apply_overrides();
 
@@ -751,14 +745,14 @@ sub extract_desc {
     $desc =~ s/\n(?=\S)/ /gs;
 
     unless ($longdesc) {
-        $longdesc
+        $longdesc 
             = $parser->get('DESCRIPTION')
             || $parser->get('DETAILS')
             || $desc;
         ( $modulename = $perlname ) =~ s/-/::/g;
         $longdesc =~ s/This module/$modulename/;
 
-        local($Text::Wrap::columns) = 78;
+        local ($Text::Wrap::columns) = 78;
         $longdesc = fill( "", "", $longdesc );
     }
     if ( defined $longdesc && $longdesc !~ /^$/ ) {
@@ -771,7 +765,7 @@ sub extract_desc {
         $longdesc =~ s/\r//g;
     }
 
-    $copyright
+    $copyright 
         = $copyright
         || $parser->get('COPYRIGHT')
         || $parser->get('LICENSE')
@@ -859,23 +853,22 @@ sub run_depends {
 }
 
 use Storable;
-sub read_cache()
-{
+
+sub read_cache() {
     my $cache;
-    if( -r "$homedir/Contents.cache" )
-    {
-        $cache = eval{ Storable::retrieve("$homedir/Contents.cache") };
+    if ( -r "$homedir/Contents.cache" ) {
+        $cache = eval { Storable::retrieve("$homedir/Contents.cache") };
         undef($cache) unless ref($cache) and ref($cache) eq 'HASH';
     }
 
     return $cache;
 }
 
-sub store_cache($)
-{
+sub store_cache($) {
     my $cache = shift;
-    mkdir $homedir or die "Error creating '$homedir': $!\n"
-    unless -d $homedir;
+    mkdir $homedir
+        or die "Error creating '$homedir': $!\n"
+        unless -d $homedir;
 
     Storable::store( $cache, "$homedir/Contents.cache.new" );
     rename( "$homedir/Contents.cache.new", "$homedir/Contents.cache" );
@@ -951,17 +944,15 @@ sub extract_depends {
     }
 
     if (`which apt-file`) {
-        my $archspec = `dpkg --print-architecture`; chomp($archspec);
+        my $archspec = `dpkg --print-architecture`;
+        chomp($archspec);
 
         my $cache = read_cache();
-        if( $cache->{stamp} )
-        {
+        if ( $cache->{stamp} ) {
             my @contents_files;
-            for( glob "/var/cache/apt/apt-file/*_Contents-$archspec.gz" )
-            {
+            for ( glob "/var/cache/apt/apt-file/*_Contents-$archspec.gz" ) {
                 push @contents_files, $_;
-                if( (stat($_))[9] > $cache->{stamp} )
-                {
+                if ( ( stat($_) )[9] > $cache->{stamp} ) {
                     undef( $cache->{stamp} );
                     last;
                 }
@@ -970,25 +961,22 @@ sub extract_depends {
             @contents_files = sort @contents_files;
 
             undef( $cache->{stamp} )
-            unless join( '><', @contents_files ) eq join( '><', @{ $cache->{contents_files} } );
+                unless join( '><', @contents_files ) eq
+                    join( '><', @{ $cache->{contents_files} } );
         }
 
-        unless( $cache->{stamp} )
-        {
+        unless ( $cache->{stamp} ) {
             warn "Parsing apt-file Contents...\n";
-            $cache->{stamp} = time;
+            $cache->{stamp}          = time;
             $cache->{contents_files} = [];
-            $cache->{apt_contents} = {};
-            for( glob "/var/cache/apt/apt-file/*_Contents-$archspec.gz" )
-            {
+            $cache->{apt_contents}   = {};
+            for ( glob "/var/cache/apt/apt-file/*_Contents-$archspec.gz" ) {
                 push @{ $cache->{contents_files} }, $_;
-                my $f = IO::Uncompress::Gunzip->new($_);
+                my $f         = IO::Uncompress::Gunzip->new($_);
                 my $capturing = 0;
-                while( defined($_ = $f->getline) )
-                {
-                    if( $capturing )
-                    {
-                        my( $file, $packages ) = split(/\s+/);
+                while ( defined( $_ = $f->getline ) ) {
+                    if ($capturing) {
+                        my ( $file, $packages ) = split(/\s+/);
                         next unless $file =~ s{
                             ^usr/
                             (?:share|lib)/
@@ -997,24 +985,24 @@ sub extract_depends {
                             )
                          }{}x;
                         $cache->{apt_contents}{$file} = $packages;
+
                         # $packages is a comma-separated list of
                         # section/package items. We'll parse it when a file
                         # matches. Otherwise we'd parse thousands of entries,
                         # while checking only a couple
                     }
-                    else
-                    {
+                    else {
                         $capturing = 1 if /^FILE\s+LOCATION/;
                     }
                 }
             }
         }
-        else
-        {
-            warn "Using cached Contents from ".localtime($cache->{stamp})."\n";
+        else {
+            warn "Using cached Contents from "
+                . localtime( $cache->{stamp} ) . "\n";
         }
 
-        $has_apt_file = scalar(keys(%{$cache->{apt_contents}}));
+        $has_apt_file = scalar( keys( %{ $cache->{apt_contents} } ) );
         store_cache($cache) if $has_apt_file;
 
         foreach my $module (@uses) {
@@ -1027,6 +1015,7 @@ sub extract_depends {
             $module =~ s|::|/|g;
 
             my $matches = $cache->{apt_contents}{"$module.pm"};
+
             # rank non -perl packages lower
             my @matches = sort {
                 if    ( $a !~ /-perl: / ) { return 1; }
@@ -1036,13 +1025,11 @@ sub extract_depends {
 
             # use the first package that is not already in @deps
             # or @stdmodules
-            for my $p(@matches) {
-                if ( grep { $_ eq $p } @deps, split( /,/, @stdmodules ) )
-                {
+            for my $p (@matches) {
+                if ( grep { $_ eq $p } @deps, split( /,/, @stdmodules ) ) {
                     print "= $mod is a core module\n";
                 }
-                else
-                {
+                else {
                     print "+ $mod is contained in $p\n";
                     if ( exists $dep_hash{$mod} ) {
                         my $v = $dep_hash{$mod};
@@ -1225,11 +1212,13 @@ sub create_control {
     $fh->print("Source: $srcname\n");
     $fh->print("Section: $section\n");
     $fh->print("Priority: $priority\n");
-    local $Text::Wrap::break = ', ';
+    local $Text::Wrap::break     = ', ';
     local $Text::Wrap::separator = ",\n";
     $fh->print( wrap( '', ' ', "Build-Depends: $bdepends\n" ) ) if $bdepends;
-    $fh->print( wrap( '', ' ', "Build-Depends-Indep: $bdependsi\n" ) ) if $bdependsi;
-    $fh->print($extrasfields)                       if defined $extrasfields;
+    $fh->print( wrap( '', ' ', "Build-Depends-Indep: $bdependsi\n" ) )
+        if $bdependsi;
+    $fh->print($extrasfields) if defined $extrasfields;
+
     if ( $opts{'pkg-perl'} ) {
         $fh->print(
             "Maintainer: Debian Perl Group <pkg-perl-maintainers\@lists.alioth.debian.org>\n"
