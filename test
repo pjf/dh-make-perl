@@ -1,0 +1,12 @@
+#!/usr/bin/perl -w
+use strict;
+use autodie;
+
+use FindBin qw($Bin);
+
+print "Running tests in $Bin/t\n";
+
+chdir($Bin);
+
+# Multi-arg exec avoids the shell.
+exec( qw(prove -Ilib t/) );
