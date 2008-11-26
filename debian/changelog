@@ -1,7 +1,57 @@
-dh-make-perl (0.49) UNRELEASED; urgency=low
+dh-make-perl (0.52) UNRELEASED; urgency=low
+
+  [ gregor herrmann ]
+  * Handle --desc option before --refresh to avoid uninitialized $desc
+    variable.
+
+  [ Damyan Ivanov ]
+  * Apply two patches from Paul Fenwick reformatting the whitespace of
+    dh-make-perl. Hopefully this makes the code a bit easier for people not
+    used to it.
+  * extract_depends: try Module::Depends first, ::Intrusive -- second
+  * avoid duplicate entries in dependency lists
+  * better output when searching for dependent packages
+  * Add Paul Fenwick to the 'Patched from' section
+
+  [ Paul Fenwick ]
+  * Setting the base for unit-testing:
+    + Simple patch to avoid doing work if we're being required and not run.
+    + Basic tests for extract_name_ver_from_autodie.
+  * Updated regexp to extract version from basic Module::Install.
+  * Updated extract_name_ver_from_makefile to handle M::I recommended
+    syntax.
+
+ -- Damyan Ivanov <dmn@debian.org>  Tue, 25 Nov 2008 10:31:48 +0200
+
+dh-make-perl (0.50) unstable; urgency=low
+
+  [ gregor herrmann ]
+  * Replace 'This module' with the real module name in the created long
+    description and wrap the description to a sane width (closes: #506071).
+
+  [ Damyan Ivanov ]
+  * replace parsing of 'apt-file search' output with parsing the Contents
+    files in /var/cache/apt/apt-file and cache the result.
+    Closes: #506075 -- optimize apt-file invocations
+  * wrap generated (build-)dependency fields. Thanks to Gregor Herrmann
+  * fix a bug introduced in the fix of #487850 causing duplication of detected
+    dependencies
+
+ -- Damyan Ivanov <dmn@debian.org>  Sat, 22 Nov 2008 15:11:52 +0200
+
+dh-make-perl (0.49) unstable; urgency=low
 
   [ Damyan Ivanov ]
   * Default debhelper level on generated packages is 7
+  * Make parentheses around module name optional in the Module::Install-using
+    Makefile.PL. Closes: #493652 -- Fails to detect name
+    Thanks to Christ West (Faux) for the report and the patch
+  * Make --depends and similar options to add packages to dependencies instead
+    of replacing the detected dependecy lists.
+    Closes: #487850 -- allow adding, not overwriting dependencies with
+                       --depends and friends
+  * Do not bail out when unable to determine dependencies
+  * Avoid usage of uninitialized variable when no META file was found
 
   [ Gunnar Wolf ]
   * Now creates machine-parsable debian/copyright files (cf.
@@ -19,7 +69,7 @@ dh-make-perl (0.49) UNRELEASED; urgency=low
     collecting all the information if we `die' anyway; thanks to Mark Lawrence
     for the bug report (closes: #500685).
 
- -- Gunnar Wolf <gwolf@debian.org>  Thu, 07 Aug 2008 15:49:12 -0500
+ -- Damyan Ivanov <dmn@debian.org>  Wed, 19 Nov 2008 00:37:10 +0200
 
 dh-make-perl (0.48) unstable; urgency=low
 

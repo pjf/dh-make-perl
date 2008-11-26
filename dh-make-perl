@@ -9,8 +9,12 @@ use User::pwent;
 use Getopt::Long;
 use Cwd;
 use CPAN;
+use Module::Depends;
 use Module::Depends::Intrusive;
 use Email::Date::Format qw(email_date);
+use Text::Wrap;
+use Module::CoreList ();
+use AptPkg::Config;
 use strict;
 
 # TODO:
@@ -86,10 +90,151 @@ sub interior_sequence {
     return $seq_argument;
 }
 
+package AptContents;
+
+use base qw(Class::Accessor);
+__PACKAGE__->mk_accessors(qw(cache homedir));
+
+use Storable;
+use File::Which;
+
+sub new
+{
+    my $class = shift;
+    $class = ref($class) if ref($class);
+    my $self = $class->SUPER::new(@_);
+
+    $self->homedir
+        or die "No homedir given";
+
+    if ( which('apt-file') ) {
+        $self->read_cache();
+        $self->cache or return undef;
+    }
+    else {
+        return undef;
+    }
+
+    return $self;
+}
+
+sub read_cache() {
+    my $self = shift;
+
+    my $homedir = $self->homedir;
+
+    my $cache;
+
+    if ( -r "$homedir/Contents.cache" ) {
+        $cache = eval { Storable::retrieve("$homedir/Contents.cache") };
+        undef($cache) unless ref($cache) and ref($cache) eq 'HASH';
+    }
+
+    my $archspec = `dpkg --print-architecture`;
+    chomp($archspec);
+
+    # see if the cache is stale
+    if ( $cache and $cache->{stamp} and $cache->{contents_files} ) {
+        my @contents_files;
+        for ( glob "/var/cache/apt/apt-file/*_Contents-$archspec.gz" ) {
+            push @contents_files, $_;
+            if ( ( stat($_) )[9] > $cache->{stamp} ) {
+                undef($cache);
+                last;
+            }
+        }
+
+        @contents_files = sort @contents_files;
+
+        undef($cache)
+            unless join( '><', @contents_files ) eq
+                join( '><', @{ $cache->{contents_files} } );
+    }
+    else {
+        undef($cache);
+    }
+
+    unless ($cache) {
+        warn "Parsing apt-file Contents...\n";
+        $cache->{stamp}          = time;
+        $cache->{contents_files} = [];
+        $cache->{apt_contents}   = {};
+        for ( glob "/var/cache/apt/apt-file/*_Contents-$archspec.gz" ) {
+            push @{ $cache->{contents_files} }, $_;
+            my $f         = IO::Uncompress::Gunzip->new($_);
+            my $capturing = 0;
+            while ( defined( $_ = $f->getline ) ) {
+                if ($capturing) {
+                    my ( $file, $packages ) = split(/\s+/);
+                    next unless $file =~ s{
+                        ^usr/
+                        (?:share|lib)/
+                        (?:perl\d+/             # perl5/
+                        | perl/(?:\d[\d.]+)/   # or perl.5.10/
+                        )
+                    }{}x;
+                    $cache->{apt_contents}{$file} = $packages;
+
+                    # $packages is a comma-separated list of
+                    # section/package items. We'll parse it when a file
+                    # matches. Otherwise we'd parse thousands of entries,
+                    # while checking only a couple
+                }
+                else {
+                    $capturing = 1 if /^FILE\s+LOCATION/;
+                }
+            }
+        }
+
+        if ( %{ $cache->{apt_contents} } ) {
+            $self->cache($cache);
+            $self->store_cache;
+        }
+    }
+    else {
+        warn "Using cached Contents from "
+        . localtime( $cache->{stamp} ) . "\n";
+
+        $self->cache($cache);
+    }
+}
+
+sub store_cache {
+    my $self = shift;
+
+    my $homedir = $self->homedir;
+
+    unless ( -d $homedir ) {
+        mkdir $homedir
+            or die "Error creating '$homedir': $!\n"
+    }
+
+    Storable::store( $self->cache, "$homedir/Contents.cache.new" );
+    rename( "$homedir/Contents.cache.new", "$homedir/Contents.cache" );
+}
+
+sub find {
+    my( $self, $file ) = @_;
+
+    my $packages = $self->cache->{apt_contents}{$file};
+
+    return () unless $packages;
+
+    my @packages = split( /,/, $packages );     # Contents contains a
+                                                # comma-delimitted list
+                                                # of packages
+
+    s{[^/]+/}{} for @packages;  # remove section
+
+    return @packages;
+}
+
+1;
+
 ######################################################################
 # Main dh-make-perl starts here, don't look any further!
 package main;
-my (@stdmodules, $min_perl_version, $debstdversion, $priority,
+my ($min_perl_version, $debstdversion, $priority,
     $section,    $depends,          $bdepends,      $bdependsi,
     $maintainer, $arch,             $closes,        $date,
     $debiandir,  $startdir,         $datadir,       $homedir,
@@ -114,6 +259,11 @@ $date      = email_date(time);
 $startdir  = getcwd();
 $datadir   = '/usr/share/dh-make-perl';
 $homedir   = "$ENV{HOME}/.dh-make-perl";
+
+# If we're being required rather than called as a main command, then
+# return now without doing any work.  This facilitates easier testing.
+
+return 1 if $0 ne __FILE__;
 
 my ( $perlname, $maindir, $modulepm, $meta );
 my ($pkgname, $srcname,
@@ -148,7 +298,6 @@ GetOptions(
 ) or die usage_instructions();
 
 $bdepends   = "debhelper (>= $opts{dh})";
-@stdmodules = get_stdmodules();
 
 # Help requested? Nice, we can just die! Isn't it helpful?
 die usage_instructions() if $opts{help};
@@ -171,11 +320,23 @@ else {
 }
 $maintainer = get_maintainer($email);
 
+if ( defined $opts{desc} ) {
+    $desc = $opts{desc};
+}
+else {
+    $desc = '';
+}
+
 if ( $opts{refresh} ) {
     print "Engaging refresh mode\n";
     $maindir = '.';
-    $meta    = process_meta("$maindir/META.yml")
-        if ( -f "$maindir/META.yml" );    # package name
+
+    die "debian/rules.bak already exists. Aborting!\n"
+        if -e "debian/rules.bak";
+
+    die "debian/copyright.bak already exists. Aborting!\n"
+        if -e "debian/copyright.bak";
+
     ( $pkgname, $version ) = extract_basic();  # also detects arch-dep package
     $module_build = ( -f "$maindir/Build.PL" ) ? "Module-Build" : "MakeMaker";
     $debiandir = './debian';
@@ -200,12 +361,6 @@ my $tarball = setup_dir();
 $meta = process_meta("$maindir/META.yml") if ( -f "$maindir/META.yml" );
 findbin_fix();
 
-if ( defined $opts{desc} ) {
-    $desc = $opts{desc};
-}
-else {
-    $desc = '';
-}
 ( $pkgname, $version ) = extract_basic();
 if ( defined $opts{p} ) {
     $pkgname = $opts{p};
@@ -234,24 +389,17 @@ extract_changelog($maindir);
 extract_docs($maindir);
 extract_examples($maindir);
 
-if ( defined $opts{bdepends} ) {
-    $bdepends = $opts{bdepends};
-}
-else {
-    $bdepends .= ', libmodule-build-perl'
-        if ( $module_build eq "Module-Build" );
-}
-$bdependsi = $opts{bdependsi} if defined $opts{bdependsi};
+$bdepends .= ', libmodule-build-perl' if ( $module_build eq "Module-Build" );
+$bdepends = join( ', ', $bdepends || (), $opts{bdepends} || () );
 
-if ( defined $opts{depends} ) {
-    $depends = $opts{depends};
-}
-else {
-    $depends .= ', ${shlibs:Depends}' if $arch eq 'any';
-    $depends .= ', ${misc:Depends}';
-    my $extradeps = extract_depends( $maindir, $meta );
-    $depends .= ( $extradeps ? ", $extradeps" : '' );
-}
+$bdependsi = join( ', ', $bdependsi || (), $opts{bdependsi} || () );
+
+$depends .= ', ${shlibs:Depends}' if $arch eq 'any';
+$depends .= ', ${misc:Depends}';
+my $extradeps = extract_depends( $maindir, $meta );
+
+$depends
+    = join( ', ', $depends || (), $opts{depends} || (), $extradeps || (), );
 
 apply_overrides();
 
@@ -304,25 +452,16 @@ Other options: [ --desc DESCRIPTION ] [ --arch all|any ] [ --version VERSION ]
 USAGE
 }
 
-sub get_stdmodules {
-    my ( $base_packages, @modules, $paths );
-    $base_packages = $opts{basepkgs} || 'perl,perl-base,perl-modules';
+sub is_core_module {
+    my $module = shift;
 
-   # We will check on all the base Perl packages for the modules they provide.
-   # To know which files we care for, we look at @INC - In a format easy to
-   # integrate into a regex
-    $paths = join( '|', @INC );
+    my $core = $Module::CoreList::version{$]}
+            || $Module::CoreList::version{$]+0};
 
-    for my $pkg ( split( /,/, $base_packages ) ) {
-        for my $file ( map { chomp; $_ } `dpkg -L $pkg` ) {
-            next unless $file =~ s!^(?:$paths)[\d\.]*/(.*).pm$!$1!x;
+    $core
+        or die "Internal error: \$Module::CoreList::version{ $] } is empty";
 
-            $file =~ s!/!::!g;
-            push @modules, $file;
-        }
-    }
-
-    return sort @modules;
+    return exists( $core->{$module} );
 }
 
 sub setup_dir {
@@ -332,7 +471,7 @@ sub setup_dir {
         my ($new_maindir);
 
         # Is the module a core module?
-        if ( grep( /$opts{cpan}/, @stdmodules ) ) {
+        if ( is_core_module( $opts{cpan} ) ) {
             die "$opts{cpan} is a standard module.\n"
                 unless $opts{'core-ok'};
         }
@@ -607,13 +746,16 @@ sub extract_name_ver_from_makefile {
         $name = $4;
     }
     elsif (
-        $file =~ /name
-		 \s*
-		 \(
-		     ([\'\"]?)
-		         (\S+)
-		     \1
-		 \);/xs
+        $file =~ m{
+                        name
+                         \s*
+                         \(?                    # Optional open paren
+                             ([\'\"]?)          # Optional open quote
+                                 (\S+)          # Quoted name
+                             \1                 # Optional close quote
+                         \)?                    # Optional close paren
+                         \s*;
+                 }xs
         )
     {
 
@@ -652,10 +794,19 @@ sub extract_name_ver_from_makefile {
         $vfrom = $4;
 
     }
-    elsif ( $file =~ /version\((\S+)\)/s ) {
+    elsif ( 
+        $file =~ m{
+            \bversion\b\s*                  # The word version
+            \(?\s*                          # Optional open-parens
+            (['"]?)                         # Optional quotes
+            ([\d_.]+)                       # The actual version.
+            \1                              # Optional close-quotes
+            \s*\)?                          # Optional close-parens.
+        }sx 
+    ) {
 
         # Module::Install
-        $ver = $1;
+        $ver = $2;
     }
 
     $dir = dirname($makefile) || './';
@@ -711,7 +862,7 @@ sub extract_name_ver_from_makefile {
 }
 
 sub extract_desc {
-    my ( $file, $parser );
+    my ( $file, $parser, $modulename );
     $file   = shift;
     $parser = new MyPod;
     return unless -f $file;
@@ -743,10 +894,15 @@ sub extract_desc {
     $desc =~ s/\n(?=\S)/ /gs;
 
     unless ($longdesc) {
-        $longdesc
+        $longdesc 
             = $parser->get('DESCRIPTION')
             || $parser->get('DETAILS')
             || $desc;
+        ( $modulename = $perlname ) =~ s/-/::/g;
+        $longdesc =~ s/This module/$modulename/;
+
+        local ($Text::Wrap::columns) = 78;
+        $longdesc = fill( "", "", $longdesc );
     }
     if ( defined $longdesc && $longdesc !~ /^$/ ) {
         $longdesc =~ s/^\s+//s;
@@ -758,7 +914,7 @@ sub extract_desc {
         $longdesc =~ s/\r//g;
     }
 
-    $copyright
+    $copyright 
         = $copyright
         || $parser->get('COPYRIGHT')
         || $parser->get('LICENSE')
@@ -845,110 +1001,126 @@ sub run_depends {
     return %dep_hash;
 }
 
+# filter @deps to contain only one instance of each package
+# say we have te following list of dependencies:
+#   libppi-perl, libppi-perl (>= 3.0), libarm-perl, libalpa-perl, libarm-perl (>= 2)
+# we want a clean list instead:
+#   libalpa-perl, libarm-perl (>= 2), libppi-perl (>= 3.0)
+sub prune_deps(@) {
+    my %deps;
+    for (@_) {
+        my $p = $_->{name};
+        my $v = exists( $_->{version} ) ? $_->{version} : undef;
+        if ( exists $deps{$p} ) {
+            my $cur_ver = $deps{$p};
+
+            $deps{$p} = $v
+                if defined($v) and not defined($cur_ver)
+                    or $AptPkg::Config::_config->system->versioning->compare(
+                        $cur_ver, $v ) < 0;
+        }
+        else {
+            $deps{$p} = $v;
+        }
+
+    }
+
+    return map( { name => $_, version => $deps{$_} }, sort( keys(%deps) ) );
+}
+
 sub extract_depends {
     my $dir  = shift;
     my $meta = shift;
-    my ( %dep_hash, @uses, @deps, @not_debs, $has_apt_file );
+    my ( %dep_hash, @uses, @deps, @not_debs );
     local @INC = ( $dir, @INC );
 
     $dir .= '/' unless $dir =~ m/\/$/;
 
-    # try Module::Depends::Intrusive, but if that fails then
-    # fall back to Module::Depends.
+    # try Module::Depends, but if that fails then
+    # fall back to Module::Depends::Intrusive.
 
-    eval { %dep_hash = run_depends( 'Module::Depends::Intrusive', $dir ); };
+    eval { %dep_hash = run_depends( 'Module::Depends', $dir ); };
     if ($@) {
         warn '=' x 70, "\n";
-        warn "First attempt (Module::Depends::Intrusive) at a dependency\n"
-            . "check failed. Possible use of Module::Install ?\n"
-            . "Trying again with Module::Depends ... \n";
+        warn "First attempt (Module::Depends) at a dependency\n"
+            . "check failed. Missing/bad META.yml?\n"
+            . "Trying again with Module::Depends::Intrusive ... \n";
         warn '=' x 70, "\n";
 
-        eval { %dep_hash = run_depends( 'Module::Depends', $dir ); };
-
+        eval {
+            %dep_hash = run_depends( 'Module::Depends::Intrusive', $dir );
+        };
         if ($@) {
             warn '=' x 70, "\n";
             warn
                 "Could not find the dependencies for the requested module.\n";
             warn "Generated error: $@";
 
-            warn "Please check if your module depends on Module::Install\n"
-                . "for its build process - Automatically finding its\n"
-                . "dependencies is unsupported, please specify them manually\n"
-                . "using the 'depends' option. \n";
-            warn
-                "Alternatively, including a META.yml file with dependencies\n"
-                . "should allow discovery even for Module::Install modules. \n";
+            warn "Please bug the module author to provide a proper META.yml\n"
+                . "file.\n"
+                . "Automatic find of dependencies failed. You may want to \n"
+                . "retry using the 'depends' option\n";
             warn '=' x 70, "\n";
-
-            exit 1;
         }
     }
 
     foreach my $module ( keys(%dep_hash) ) {
-        next if ( grep ( /^$module$/, @stdmodules ) );
+        if ( is_core_module($module) ) {
+            print "= $module is a core module\n";
+
+            # TODO
+            # see if there is a version requirement and if the core
+            # module satisfies it. If it does, see if previous perl
+            # releases satisfy it too and if needed, bump the perl
+            # dependency to the lowest version that contains module
+            # version satisfying the dependency
+            next;
+        }
 
         push @uses, $module;
     }
 
-    if (`which apt-file`) {
-        $has_apt_file = 1;
-        foreach my $module (@uses) {
-            my ( @rawsearch, @search, $ls, $ver, $re, $mod );
+    my $apt_contents = AptContents->new({
+        homedir => $homedir,
+    });
 
+    if ($apt_contents) {
+        foreach my $module (@uses) {
             if ( $module eq 'perl' ) {
                 substitute_perl_dependency( $dep_hash{perl} );
                 next;
             }
 
-            $mod = $module;
-            print
-                "Searching for package containing $module using apt-file.\n";
+            my $mod = $module;
             $module =~ s|::|/|g;
 
-            # Regex's to search the return of apt-file to find the right pkg
-            $ls  = '(?:lib|share)';
-            $ver = '\d+(\.\d+)+';
-            $re  = "usr/(?:$ls/perl/$ver|$ls/perl5)/$module\\.pm";
-
-            @rawsearch = `apt-file search -x '$re'`;
+            my @matches = $apt_contents->find("$module.pm");
 
             # rank non -perl packages lower
-            @search = sort {
+            @matches = sort {
                 if    ( $a !~ /-perl: / ) { return 1; }
                 elsif ( $b !~ /-perl: / ) { return -1; }
                 else                      { return $a cmp $b; }    # or 0?
-            } @rawsearch;
+            } @matches;
 
-            for (@search) {
-
-                # apt-file output
-                # package-name: path/to/perl/module.pm
-                chomp;
-                my ( $p, $f ) = split / /, $_;
-                chop($p);    #Get rid of the ":"
-                if ( $f =~ /$re/ && !grep { $_ eq $p } @deps,
-                    split( /,/, @stdmodules ) )
-                {
-                    if ( exists $dep_hash{$mod} ) {
-                        my $v = $dep_hash{$mod};
-                        $v =~ s/^v//;    # strip leading 'v' from version
-                        push @deps,
-                            {
-                            name    => $p,
-                            version => $v
-                            };
-                    }
-                    else {
-                        push @deps, { name => $p };
-                    }
-                    last;
+            if ( my $p = $matches[0] ) {
+                print "+ $mod is contained in $p\n";
+                if ( exists $dep_hash{$mod} ) {
+                    my $v = $dep_hash{$mod};
+                    $v =~ s/^v//;    # strip leading 'v' from version
+                    push @deps,
+                    {
+                        name    => $p,
+                        version => $v
+                    };
+                }
+                else {
+                    push @deps, { name => $p };
                 }
             }
-
-            unless (@search) {
-                $module =~ s|/|::|g;
-                push @not_debs, $module;
+            else {
+                print "- $mod not found in any package\n";
+                push @not_debs, $mod;
             }
         }
     }
@@ -956,13 +1128,15 @@ sub extract_depends {
         die "--requiredeps was specified, but apt-file was not found\n";
     }
 
+    @deps = prune_deps(@deps);
+
     print "\n";
     print "Needs the following debian packages: "
         . join( ", ", map { $_->{name} } @deps ) . "\n"
         if (@deps);
     if (@not_debs) {
         my ($missing_debs_str);
-        if ($has_apt_file) {
+        if ($apt_contents) {
             $missing_debs_str = join( "\n",
                 "Needs the following modules for which there are no debian packages available",
                 map( {" - $_"} @not_debs ),
@@ -1109,9 +1283,13 @@ sub create_control {
     $fh->print("Source: $srcname\n");
     $fh->print("Section: $section\n");
     $fh->print("Priority: $priority\n");
-    $fh->print("Build-Depends: $bdepends\n")        if $bdepends;
-    $fh->print("Build-Depends-Indep: $bdependsi\n") if $bdependsi;
-    $fh->print($extrasfields)                       if defined $extrasfields;
+    local $Text::Wrap::break     = ', ';
+    local $Text::Wrap::separator = ",\n";
+    $fh->print( wrap( '', ' ', "Build-Depends: $bdepends\n" ) ) if $bdepends;
+    $fh->print( wrap( '', ' ', "Build-Depends-Indep: $bdependsi\n" ) )
+        if $bdependsi;
+    $fh->print($extrasfields) if defined $extrasfields;
+
     if ( $opts{'pkg-perl'} ) {
         $fh->print(
             "Maintainer: Debian Perl Group <pkg-perl-maintainers\@lists.alioth.debian.org>\n"
@@ -1133,7 +1311,7 @@ sub create_control {
     $fh->print("\n");
     $fh->print("Package: $pkgname\n");
     $fh->print("Architecture: $arch\n");
-    $fh->print("Depends: $depends\n") if $depends;
+    $fh->print( wrap( '', ' ', "Depends: $depends\n" ) ) if $depends;
     $fh->print($extrapfields) if defined $extrapfields;
     $fh->print(
         "Description: $desc\n$longdesc\n .\n This description was automagically extracted from the module by dh-make-perl.\n"
@@ -1280,7 +1458,7 @@ sub create_copyright {
             . "    and fix this file!"
     );
 
-    if ( $meta->{license} or $copyright ) {
+    if ( $meta and $meta->{license} or $copyright ) {
         my $mangle_cprt;
 
         # Pre-mangle the copyright information for the common similar cases
@@ -1292,9 +1470,8 @@ sub create_copyright {
         # mind that many licenses are not meant to be used as
         # templates (i.e. you must add the author name and some
         # information within the licensing text as such).
-        if (   $meta && $meta->{license} =~ /perl/i
-            or $mangle_cprt
-            && $mangle_cprt =~ /terms\s*as\s*Perl\s*itself/is )
+        if (   $meta and $meta->{license} and $meta->{license} =~ /perl/i
+            or $mangle_cprt =~ /terms\s*as\s*Perl\s*itself/is )
         {
             push @res, "License-Alias: Perl";
             $licenses{'GPL-1+'}   = 1;
@@ -1847,6 +2024,8 @@ Patches from:
 
 =item Oliver Gorwits E<lt>oliver.gorwits@oucs.ox.ac.ukE<gt>
 
+=item Paul Fenwick E<lt>pjf@perltraining.com.auE<gt>
+
 =item Peter Moerch E<lt>mn3k66i02@sneakemail.comE<gt>
 
 =item Stephen Oberholtzer E<lt>oliverklozoff@gmail.comE<gt>
@@ -1859,3 +2038,4 @@ Patches from:
 
 =cut
 
+# vim: set ts=8 sw=4 et :
